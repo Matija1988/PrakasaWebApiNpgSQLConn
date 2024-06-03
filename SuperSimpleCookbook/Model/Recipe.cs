@@ -2,7 +2,7 @@
 
 namespace SuperSimpleCookbook.Model
 {
-    public class Recepie : IEntity
+    public class Recipe : IEntity
     {
         public int Id { get ; set ; }
 
