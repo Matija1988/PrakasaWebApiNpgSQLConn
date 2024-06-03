@@ -162,21 +162,27 @@ namespace SuperSimpleCookbook.Controllers
 
         }
 
-       // [HttpPut]
-       // [Route("UpdateAuthor/{id:int}")]
-       // public async Task<bool> Update(Author author)
-       // {
-       //     const string commandText =
-       //"UPDATE \"Author\" SET \"FirstName\" = @FirstName, \"LastName\" = @LastName, " + "job_title = @JobTitle, salary = @Salary, hire_date = @HireDate WHERE id = @Id";
+        [HttpPut]
+        [Route("UpdateAuthor/{id:int}")]
+        public async Task<bool> Update([FromBody]Author author, int id)
+        {
+            const string commandText = "UPDATE \"Author\" SET \"Id\" = @Id, \"Uuid\" =@Uuid, \"FirstName\" = @FirstName, " +
+                "\"LastName\" = @LastName, \"DateOfBirth\" = @DateOfBirth, \"Bio\" = @Bio, \"IsActive\" = @IsActive, " +
+       "\"DateUpdated\" = @DateUpdated WHERE \"Id\" = @Id;";
 
-       //     //using var cmd = connection.CreateCommand();
-       //     //cmd.CommandText = updateQuery;
-       //     //AddParameters(cmd, employee);
-       //     //await connection.OpenAsync();
-       //     /var rowAffected = await cmd.ExecuteNonQueryAsync();
-       //     //await connection.CloseAsync();
-       //     return rowAffected > 0;
-       // }
+            using var cmd = _connection.CreateCommand();
+            cmd.CommandText = commandText;
+            AddParameters(cmd, author);
+
+            int tempId = id;
+            author.Id = tempId;
+            cmd.Parameters.AddWithValue("@Id", author.Id);
+
+            await _connection.OpenAsync();
+            var rowAffected = await cmd.ExecuteNonQueryAsync();
+            await _connection.CloseAsync();
+            return rowAffected > 0;
+        }
         private void AddParameters(NpgsqlCommand command, Author author)
         {
             Guid guid = Guid.NewGuid();
