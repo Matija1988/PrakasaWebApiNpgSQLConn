@@ -13,7 +13,8 @@ create table "Author"(
 );
 
 
-create table "Recepie"(
+
+create table "Recipe"(
 
 	"Id" serial primary key,
 	"Title" varchar(200) not null,
@@ -24,15 +25,19 @@ create table "Recepie"(
 	"DateUpdated" date not null
 );
 
-create table "AuthorRecepie"(
+create table "AuthorRecipe"(
 
 	"Id" serial primary key,
-	"RecepieId" int not null,
+	"RecipeId" int not null,
 	"AuthorId" int not null
 	
 );
 
-alter table "AuthorRecepie" add constraint "Fk_AuthorRecepie_Author_AuthorId" foreign key ("AuthorId") references "Author" ("Id");
+alter table "Author" alter column "DateOfBirth" type timestamp;
+alter table "Author" alter column "DateCreated" type timestamp;
+alter table "Author" alter column "DateUpdated" type timestamp;
 
-alter table "AuthorRecepie" add constraint "Fk_AuthorRecepie_Recepie_RecepieId" foreign key ("RecepieId") references "Recepie" ("Id");
 
+alter table "AuthorRecipe" add constraint "Fk_AuthorRecipe_Author_AuthorId" foreign key ("AuthorId") references "Author" ("Id");
+
+alter table "AuthorRecipe" add constraint "Fk_AuthorRecipe_Recepie_RecepieId" foreign key ("RecipeId") references "Recipe" ("Id");

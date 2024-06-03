@@ -1,5 +1,5 @@
 INSERT INTO
-	"Recepie" (
+	"Recipe" (
 		"Title",
 		"Subtitle",
 		"Text",
@@ -33,4 +33,4 @@ VALUES
 		'2024-03-06'
 	);
 
-select * from "Recepie";
+select * from "Recipe";

@@ -147,7 +147,6 @@ namespace SuperSimpleCookbook.Controllers
         public async Task<bool> Create([FromBody] Author author)
         {
 
-
             string commandText = "INSERT INTO \"Author\" (\"FirstName\", \"LastName\",\"DateOfBirth\", \"Bio\", \"IsActive\", \"DateCreated\", \"DateUpdated\") "
                 + " VALUES ( @FirstName, @LastName, @DateOfBirth, @Bio, @IsActive, @DateCreated, @DateUpdated) RETURNING \"Id\"";
 
@@ -163,6 +162,12 @@ namespace SuperSimpleCookbook.Controllers
 
         }
 
+        [HttpPut]
+        [Route("UpdateAuthor/{id:int}")]
+        public async Task<IActionResult> Update()
+        {
+            return null;
+        }
         private void AddParameters(NpgsqlCommand command, Author author)
         {
             command.Parameters.AddWithValue("@FirstName", author.FirstName);
