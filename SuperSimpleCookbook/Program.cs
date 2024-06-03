@@ -1,3 +1,4 @@
+using Npgsql;
 using SuperSimpleCookbook;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +10,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
-
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddScoped((provider) => new NpgsqlConnection(connectionString));
 
 var app = builder.Build();
 
