@@ -15,7 +15,7 @@ namespace SuperSimpleCookbook.Model
         [Required, StringLength(30, ErrorMessage = "Maximum allowed number of characters = 30")]
         public string LastName { get; set; }
 
-        public DateOnly? DateOfBirth { get; set; }
+        public DateTime DateOfBirth { get; set; }
 
 
         [Required, StringLength(1200, ErrorMessage = "Maximum allowed number of characters = 1200")]
@@ -23,9 +23,9 @@ namespace SuperSimpleCookbook.Model
        
         public bool IsActive { get; set; }
 
-        public DateOnly DateCreated { get; set; } = new DateOnly();
+        public DateTime DateCreated { get; set; }
 
-        public DateOnly DateUpdated { get; set; } = new DateOnly();
+        public DateTime DateUpdated { get; set; } 
 
     }
 }

@@ -42,7 +42,11 @@ namespace SuperSimpleCookbook.Controllers
                     Uuid = reader.GetGuid(1),
                     FirstName = reader.GetString(2),
                     LastName = reader.GetString(3),
+                    DateOfBirth = reader.GetDateTime(4),
                     Bio = reader.GetString(5),
+                    IsActive = reader.GetBoolean(6),
+                    DateCreated = reader.GetDateTime(7),
+                    DateUpdated = reader.GetDateTime(8),
 
                 });  
             }
@@ -80,7 +84,12 @@ namespace SuperSimpleCookbook.Controllers
                     Uuid = reader.GetGuid(1),
                     FirstName = reader.GetString(2),
                     LastName = reader.GetString(3),
+                    DateOfBirth = reader.GetDateTime(4),
                     Bio = reader.GetString(5),
+                    IsActive = reader.GetBoolean(6),
+                    DateCreated = reader.GetDateTime(7),
+                    DateUpdated = reader.GetDateTime(8)
+                   
 
                 });
             }
@@ -109,14 +118,13 @@ namespace SuperSimpleCookbook.Controllers
 
             var reader = command.ExecuteReader();
 
-            var author = new Author 
-            { 
-            Id = reader.GetInt32(0),
-            Uuid= reader.GetGuid(1),
-            FirstName = reader.GetString(2),
-            LastName = reader.GetString(3),
-            DateOfBirth = reader.IsDBNull(reader.GetOrdinal("DateOfBirth")) 
-            ? (DateOnly?)null : DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("DateOfBirth"))),
+            var author = new Author
+            {
+                Id = reader.GetInt32(0),
+                Uuid = reader.GetGuid(1),
+                FirstName = reader.GetString(2),
+                LastName = reader.GetString(3),
+                DateOfBirth = reader.GetDateTime(4),
             Bio = reader.GetString(5)
             };
 
@@ -149,7 +157,7 @@ namespace SuperSimpleCookbook.Controllers
                 command.Parameters.AddWithValue("@Uuid", guid);
                 command.Parameters.AddWithValue("@FirstName", author.FirstName);
                 command.Parameters.AddWithValue("@LastName", author.LastName);
-                command.Parameters.AddWithValue("@DateOfBirth", author.DateOfBirth ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@DateOfBirth", author.DateOfBirth);
                 command.Parameters.AddWithValue("@Bio", author.Bio);
                 command.Parameters.AddWithValue("@IsActive", author.IsActive);
                 command.Parameters.AddWithValue("@DateCreated", author.DateCreated);
