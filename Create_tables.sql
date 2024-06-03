@@ -6,11 +6,12 @@ create table "Author"(
 	"LastName" Varchar(30) Not null,
 	"DateOfBirth" date,
 	"Bio" varchar(1200),
-	"IsActive" bit not null,
+	"IsActive" bool not null,
 	"DateCreated" date not null,
 	"DateUpdated" date not null
 	
 );
+
 
 create table "Recepie"(
 
@@ -18,11 +19,10 @@ create table "Recepie"(
 	"Title" varchar(200) not null,
 	"Subtitle" varchar(200) not null,
 	"Text" varchar(4000) not null,
-	"IsActive" bit not null,
+	"IsActive" bool not null,
 	"DateCreated" date not null,
 	"DateUpdated" date not null
 );
-
 
 create table "AuthorRecepie"(
 

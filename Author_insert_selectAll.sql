@@ -18,7 +18,7 @@ VALUES
 	'Petrinja',
 	'1984-01-21',
 	'Krkan mekog srca!',
-	'1',
+	'true',
 	'2024-03-06',	
 	'2024-03-06'
 	);
@@ -41,7 +41,7 @@ VALUES
 	'Filetini',
 	'1982-06-13',
 	'Prvo radno iskustvo stekao u kuhinjama putnickih brodova gdje je i formirao svoj stil, fuzija azijske i mediteranske kuhinje.  ',
-	'1',
+	'true',
 	'2024-03-06',	
 	'2024-03-06'
 	), 
@@ -51,7 +51,7 @@ VALUES
 	'Ivic',
 	'1974-04-17',
 	'Prasci, svinje, gujde ...',
-	'1',
+	'true',
 	'2024-03-06',	
 	'2024-03-06'
 	);
