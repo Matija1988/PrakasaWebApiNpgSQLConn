@@ -7,7 +7,7 @@ namespace SuperSimpleCookbook.Model
         [Key]
         public int Id { get; set; }
 
-      //  public Guid Uuid { get; set; }
+        public Guid? Uuid { get; set; }
 
         [Required, StringLength(30, ErrorMessage ="Maximum allowed number of characters = 30")]
         public string FirstName { get; set; }

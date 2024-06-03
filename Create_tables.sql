@@ -12,7 +12,9 @@ create table "Author"(
 	
 );
 
+select * from "Author";
 
+delete from "Author" where "Id" = 6;
 
 create table "Recipe"(
 

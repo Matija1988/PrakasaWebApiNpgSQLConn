@@ -39,14 +39,14 @@ namespace SuperSimpleCookbook.Controllers
                 {
 
                     Id = reader.GetInt32(0),
-                    //Uuid = reader.GetGuid(1),
-                    FirstName = reader.GetString(1),
-                    LastName = reader.GetString(2),
-                    DateOfBirth = reader.GetDateTime(3),
-                    Bio = reader.GetString(4),
-                    IsActive = reader.GetBoolean(5),
-                    DateCreated = reader.GetDateTime(6),
-                    DateUpdated = reader.GetDateTime(7),
+                    Uuid = reader.GetGuid(1),
+                    FirstName = reader.GetString(2),
+                    LastName = reader.GetString(3),
+                    DateOfBirth = reader.GetDateTime(4),
+                    Bio = reader.GetString(5),
+                    IsActive = reader.GetBoolean(6),
+                    DateCreated = reader.GetDateTime(7),
+                    DateUpdated = reader.GetDateTime(8),
 
                 });
             }
@@ -81,14 +81,14 @@ namespace SuperSimpleCookbook.Controllers
                 {
 
                     Id = reader.GetInt32(0),
-                    //  Uuid = reader.GetGuid(1),
-                    FirstName = reader.GetString(1),
-                    LastName = reader.GetString(2),
-                    DateOfBirth = reader.GetDateTime(3),
-                    Bio = reader.GetString(4),
-                    IsActive = reader.GetBoolean(5),
-                    DateCreated = reader.GetDateTime(6),
-                    DateUpdated = reader.GetDateTime(7)
+                    Uuid = reader.GetGuid(1),
+                    FirstName = reader.GetString(2),
+                    LastName = reader.GetString(3),
+                    DateOfBirth = reader.GetDateTime(4),
+                    Bio = reader.GetString(5),
+                    IsActive = reader.GetBoolean(6),
+                    DateCreated = reader.GetDateTime(7),
+                    DateUpdated = reader.GetDateTime(8)
 
 
                 });
@@ -121,7 +121,7 @@ namespace SuperSimpleCookbook.Controllers
             var author = new Author
             {
                 Id = reader.GetInt32(0),
-                //Uuid = reader.GetGuid(1),
+                Uuid = reader.GetGuid(1),
                 FirstName = reader.GetString(2),
                 LastName = reader.GetString(3),
                 DateOfBirth = reader.GetDateTime(4),
@@ -147,8 +147,8 @@ namespace SuperSimpleCookbook.Controllers
         public async Task<bool> Create([FromBody] Author author)
         {
 
-            string commandText = "INSERT INTO \"Author\" (\"FirstName\", \"LastName\",\"DateOfBirth\", \"Bio\", \"IsActive\", \"DateCreated\", \"DateUpdated\") "
-                + " VALUES ( @FirstName, @LastName, @DateOfBirth, @Bio, @IsActive, @DateCreated, @DateUpdated) RETURNING \"Id\"";
+            string commandText = "INSERT INTO \"Author\" (\"Uuid\", \"FirstName\", \"LastName\",\"DateOfBirth\", \"Bio\", \"IsActive\", \"DateCreated\", \"DateUpdated\") "
+                + " VALUES (@Uuid, @FirstName, @LastName, @DateOfBirth, @Bio, @IsActive, @DateCreated, @DateUpdated) RETURNING \"Id\"";
 
 
             using var cmd = _connection.CreateCommand();
@@ -162,14 +162,26 @@ namespace SuperSimpleCookbook.Controllers
 
         }
 
-        [HttpPut]
-        [Route("UpdateAuthor/{id:int}")]
-        public async Task<IActionResult> Update()
-        {
-            return null;
-        }
+       // [HttpPut]
+       // [Route("UpdateAuthor/{id:int}")]
+       // public async Task<bool> Update(Author author)
+       // {
+       //     const string commandText =
+       //"UPDATE \"Author\" SET \"FirstName\" = @FirstName, \"LastName\" = @LastName, " + "job_title = @JobTitle, salary = @Salary, hire_date = @HireDate WHERE id = @Id";
+
+       //     //using var cmd = connection.CreateCommand();
+       //     //cmd.CommandText = updateQuery;
+       //     //AddParameters(cmd, employee);
+       //     //await connection.OpenAsync();
+       //     /var rowAffected = await cmd.ExecuteNonQueryAsync();
+       //     //await connection.CloseAsync();
+       //     return rowAffected > 0;
+       // }
         private void AddParameters(NpgsqlCommand command, Author author)
         {
+            Guid guid = Guid.NewGuid();
+            
+            command.Parameters.AddWithValue("@Uuid", author.Uuid = guid);
             command.Parameters.AddWithValue("@FirstName", author.FirstName);
             command.Parameters.AddWithValue("@LastName", author.LastName);
             command.Parameters.AddWithValue("@DateOfBirth", author.DateOfBirth);
