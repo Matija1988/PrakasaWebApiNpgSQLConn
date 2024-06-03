@@ -4,7 +4,7 @@ namespace SuperSimpleCookbook.Model
 {
     public class Recipe : IEntity
     {
-        public int Id { get ; set ; }
+        public int Id { get; set; }
 
 
         [Required, StringLength(200, ErrorMessage = "Maximum allowd number of characters = 200")]
@@ -20,8 +20,8 @@ namespace SuperSimpleCookbook.Model
 
         public bool IsActive { get; set; } = true;
 
-        public DateOnly DateCreated { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+        public DateTime DateCreated { get; set; }
 
-        public DateOnly DateUpdated { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+        public DateTime DateUpdated { get; set; }
     }
 }
