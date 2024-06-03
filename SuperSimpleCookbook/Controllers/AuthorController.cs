@@ -144,21 +144,27 @@ namespace SuperSimpleCookbook.Controllers
         [HttpPost]
         [Route("CreateAuthor")]
 
-        public async Task<bool> Create([FromBody] Author author)
+        public async Task<IActionResult> Create([FromBody] Author author)
         {
+            try
+            {
+                string commandText = "INSERT INTO \"Author\" (\"Uuid\", \"FirstName\", \"LastName\",\"DateOfBirth\", \"Bio\", \"IsActive\", \"DateCreated\", \"DateUpdated\") "
+                    + " VALUES (@Uuid, @FirstName, @LastName, @DateOfBirth, @Bio, @IsActive, @DateCreated, @DateUpdated) RETURNING \"Id\"";
 
-            string commandText = "INSERT INTO \"Author\" (\"Uuid\", \"FirstName\", \"LastName\",\"DateOfBirth\", \"Bio\", \"IsActive\", \"DateCreated\", \"DateUpdated\") "
-                + " VALUES (@Uuid, @FirstName, @LastName, @DateOfBirth, @Bio, @IsActive, @DateCreated, @DateUpdated) RETURNING \"Id\"";
 
-
-            using var cmd = _connection.CreateCommand();
-            cmd.CommandText = commandText;
-            AddParameters(cmd, author);
-            await _connection.OpenAsync();
-            var rowAffected = await cmd.ExecuteNonQueryAsync();
-            await _connection.CloseAsync();
-            await _connection.DisposeAsync();
-            return rowAffected > 0;
+                using var cmd = _connection.CreateCommand();
+                cmd.CommandText = commandText;
+                AddParameters(cmd, author);
+                await _connection.OpenAsync();
+                var rowAffected = await cmd.ExecuteNonQueryAsync();
+                await _connection.CloseAsync();
+                await _connection.DisposeAsync();
+                return StatusCode(StatusCodes.Status201Created, author);
+            }
+            catch (Exception ex) 
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
 
         }
 
@@ -181,8 +187,24 @@ namespace SuperSimpleCookbook.Controllers
             await _connection.OpenAsync();
             var rowAffected = await cmd.ExecuteNonQueryAsync();
             await _connection.CloseAsync();
+            await _connection.DisposeAsync();
             return rowAffected > 0;
         }
+
+        [HttpDelete]
+        [Route("DeleteAuthor/{id:int}")]
+        public async Task<bool> Delete(int id)
+        {
+            const string commandText = "DELETE FROM \"Author\" WHERE \"Id\" = @Id";
+            using var cmd = _connection.CreateCommand();
+            cmd.CommandText = commandText;
+            cmd.Parameters.AddWithValue("@Id", id);
+            await _connection.OpenAsync();
+            var rowAffected = await cmd.ExecuteNonQueryAsync();
+            await _connection.CloseAsync();
+            return rowAffected > 0;
+        }
+
         private void AddParameters(NpgsqlCommand command, Author author)
         {
             Guid guid = Guid.NewGuid();
