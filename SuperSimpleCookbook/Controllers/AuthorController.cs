@@ -29,7 +29,7 @@ namespace SuperSimpleCookbook.Controllers
             var listFromDB = new List<Author>();
             var command = new NpgsqlCommand(commandText, _connection);
 
-            _connection.Open();
+            await  _connection.OpenAsync();
 
             var reader = command.ExecuteReader();
 
@@ -55,7 +55,7 @@ namespace SuperSimpleCookbook.Controllers
                 return NotFound("No data in database!");
             }
 
-            _connection.Close();
+            await  _connection.CloseAsync();
             await reader.DisposeAsync();
 
             return Ok(listFromDB);
@@ -71,7 +71,7 @@ namespace SuperSimpleCookbook.Controllers
             var listFromDB = new List<Author>();
             var command = new NpgsqlCommand(commandText, _connection);
 
-            _connection.Open();
+            await _connection.OpenAsync();
 
             var reader = command.ExecuteReader();
 
@@ -98,7 +98,7 @@ namespace SuperSimpleCookbook.Controllers
                 return NotFound("No data in database!");
             }
 
-            _connection.Close();
+            await _connection.CloseAsync();
             await reader.DisposeAsync();
 
             return Ok(listFromDB);
@@ -114,7 +114,7 @@ namespace SuperSimpleCookbook.Controllers
             var command = new NpgsqlCommand(commandText, _connection);
             command.Parameters.AddWithValue("@guid", guid);
 
-            _connection.Open();
+            await _connection.OpenAsync();
 
             var reader = command.ExecuteReader();
 
@@ -125,7 +125,10 @@ namespace SuperSimpleCookbook.Controllers
                 FirstName = reader.GetString(2),
                 LastName = reader.GetString(3),
                 DateOfBirth = reader.GetDateTime(4),
-                Bio = reader.GetString(5)
+                Bio = reader.GetString(5),
+                IsActive = reader.GetBoolean(6),
+                DateCreated = reader.GetDateTime(7),
+                DateUpdated = reader.GetDateTime(8)
             };
 
 
@@ -134,7 +137,7 @@ namespace SuperSimpleCookbook.Controllers
                 return NotFound();
             }
 
-            _connection.Close();
+            await _connection.CloseAsync();
             await _connection.DisposeAsync();
 
             return Ok(author);
