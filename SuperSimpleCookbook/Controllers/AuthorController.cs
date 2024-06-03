@@ -170,8 +170,9 @@ namespace SuperSimpleCookbook.Controllers
 
         [HttpPut]
         [Route("UpdateAuthor/{id:int}")]
-        public async Task<bool> Update([FromBody]Author author, int id)
+        public async Task<IActionResult> Update([FromBody]Author author, int id)
         {
+            try { 
             const string commandText = "UPDATE \"Author\" SET \"Id\" = @Id, \"Uuid\" =@Uuid, \"FirstName\" = @FirstName, " +
                 "\"LastName\" = @LastName, \"DateOfBirth\" = @DateOfBirth, \"Bio\" = @Bio, \"IsActive\" = @IsActive, " +
        "\"DateUpdated\" = @DateUpdated WHERE \"Id\" = @Id;";
@@ -188,13 +189,19 @@ namespace SuperSimpleCookbook.Controllers
             var rowAffected = await cmd.ExecuteNonQueryAsync();
             await _connection.CloseAsync();
             await _connection.DisposeAsync();
-            return rowAffected > 0;
+            return StatusCode(StatusCodes.Status200OK, author);
+            }
+            catch(Exception ex) 
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
         [HttpDelete]
         [Route("DeleteAuthor/{id:int}")]
-        public async Task<bool> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
+            try { 
             const string commandText = "DELETE FROM \"Author\" WHERE \"Id\" = @Id";
             using var cmd = _connection.CreateCommand();
             cmd.CommandText = commandText;
@@ -202,7 +209,12 @@ namespace SuperSimpleCookbook.Controllers
             await _connection.OpenAsync();
             var rowAffected = await cmd.ExecuteNonQueryAsync();
             await _connection.CloseAsync();
-            return rowAffected > 0;
+            return StatusCode(StatusCodes.Status200OK); 
+            } 
+            catch(Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
         private void AddParameters(NpgsqlCommand command, Author author)
