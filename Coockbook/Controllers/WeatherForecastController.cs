@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace SuperSimpleCookbook.Controllers
+namespace Coockbook.Controllers
 {
     [ApiController]
     [Route("[controller]")]

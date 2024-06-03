@@ -1,4 +1,4 @@
-namespace SuperSimpleCookbook
+namespace Coockbook
 {
     public class WeatherForecast
     {
