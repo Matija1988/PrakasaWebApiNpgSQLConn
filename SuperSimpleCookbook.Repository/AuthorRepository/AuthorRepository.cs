@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -156,9 +157,9 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
         public async Task<List<AuthorRecipe>> GetRecepiesByAuthorGuid(Guid uuid)
         {
             string commandText = "SELECT \"Author\".\"FirstName\", \"Author\".\"LastName\", \"Recipe\".\"Title\" " +
-                "FROM \"AuthorRecipe\"" +
-                " RIGHT JOIN \"Author\" ON \"AuthorRecipe\".\"Id\" = \"Author\".\"Id\"" +
-                " RIGHT JOIN \"Recipe\" ON \"AuthorRecipe\".\"Id\" = \"Recipe\".\"Id\"" +
+                "FROM \"Author\"" +
+                " INNER JOIN \"AuthorRecipe\" ON \"Author\".\"Id\" = \"AuthorRecipe\".\"AuthorId\"" +
+                " INNER JOIN \"Recipe\" ON \"Recipe\".\"Id\" = \"AuthorRecipe\".\"RecipeId\"" +
                 " WHERE \"Author\".\"Uuid\" = @uuid";
 
             var listFromDB = new List<AuthorRecipe>();
