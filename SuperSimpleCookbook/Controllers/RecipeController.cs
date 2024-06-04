@@ -70,7 +70,12 @@ namespace SuperSimpleCookbook.Controllers
 
             var response = await _service.Create(newRecipe);
 
-            return StatusCode(StatusCodes.Status201Created, response);
+            if (response.Success == false)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
+            }
+
+            return StatusCode(StatusCodes.Status201Created, response.Data);
 
         }
 
@@ -85,7 +90,12 @@ namespace SuperSimpleCookbook.Controllers
 
             var response = await _service.Update(newRecipe, id);
 
-            return Ok(response);
+            if (response.Success == false)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
+            }
+
+            return Ok(response.Data);
 
         }
 
@@ -100,7 +110,7 @@ namespace SuperSimpleCookbook.Controllers
                 return Ok();    
             }
 
-            return BadRequest();
+            return NotFound();
         }
 
     }

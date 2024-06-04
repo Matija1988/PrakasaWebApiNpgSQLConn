@@ -170,8 +170,9 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             return response;
         }
 
-        public async Task<Recipe> Post(Recipe item)
+        public async Task <ServiceResponse<Recipe>> Post(Recipe item)
         {
+            var response = new ServiceResponse<Recipe>();
             try
             {
                 string commandText = "INSERT INTO \"Recipe\" (\"Title\", \"Subtitle\", \"Text\",\"IsActive\",\"DateCreated\", \"DateUpdated\") "
@@ -186,16 +187,24 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
                 await _connection.CloseAsync();
                 await _connection.DisposeAsync();
-                return item;
+
+                response.Success = true;
+                response.Data = item;
+
+                return response;
             }
             catch (Exception ex)
             {
-                return null;
+                response.Success = false;
+                response.Message = "Error in recipe repository post method " + ex.Message;
+                return response;
             }
         }
 
-        public async Task<Recipe> Put(Recipe item, int id)
+        public async Task<ServiceResponse<Recipe>> Put(Recipe item, int id)
         {
+            var response = new ServiceResponse<Recipe>();
+
             try
             {
                 const string commandText = "UPDATE \"Recipe\" SET \"Id\" = @Id, \"Title\" =@Title, \"Subtitle\" = @Subtitle, " +
@@ -214,11 +223,16 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
                 await _connection.CloseAsync();
                 await _connection.DisposeAsync();
-                return item;
+
+                response.Success = true;
+                response.Data = item;
+                return response;
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                response.Success = false;
+                response.Message = "Update failed " + ex.Message;
+                return response;
             }
         }
         private void AddParameters(NpgsqlCommand cmd, Recipe item)

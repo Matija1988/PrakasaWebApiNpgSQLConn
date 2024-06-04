@@ -20,9 +20,16 @@ namespace SuperSimpleCookbook.Service.RecipeService
             _repository = repository;
         }
 
-        public Task<Recipe> Create(Recipe entity)
+        public async Task <ServiceResponse<Recipe>> Create(Recipe entity)
         {
-            return _repository.Post(entity);
+            var response = await _repository.Post(entity);
+
+            if (response.Success == false) 
+            {
+                return response;
+            }
+
+            return response;
         }
 
         public Task<bool> Delete(int id)
@@ -67,9 +74,16 @@ namespace SuperSimpleCookbook.Service.RecipeService
             return response;
         }
 
-        public Task<Recipe> Update(Recipe entity, int id)
+        public async Task <ServiceResponse<Recipe>> Update(Recipe entity, int id)
         {
-            return _repository.Put(entity, id);
+            var response = await _repository.Put(entity, id);
+
+            if (response.Success == false)
+            {
+                return response;
+            }
+
+            return response;
         }
     }
 }

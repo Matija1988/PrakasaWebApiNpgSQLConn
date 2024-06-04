@@ -10,9 +10,9 @@ namespace SuperSimpleCookbook.Service.Common
 
         Task <ServiceResponse<List<T>>> GetNotActive();
 
-        Task<T> Create(T entity);
+        Task <ServiceResponse<T>> Create(T entity);
 
-        Task<T> Update(T entity, int id);
+        Task <ServiceResponse<T>> Update(T entity, int id);
 
         Task<bool> Delete(int id);
     }
