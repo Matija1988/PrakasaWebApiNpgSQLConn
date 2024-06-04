@@ -4,21 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SuperSimpleCookbook.Repository.Common.Interfaces
+namespace SuperSimpleCookbook.Service.Common
 {
-    public interface IRepositoryRecipe<T> where T : class
+    public interface IRecipeService<T> where T : class
     {
         Task<List<T>> GetAll();
-        Task<T> Get(int id);
+
+        Task<T> GetById(int id);
 
         Task<List<T>> GetNotActive();
 
-        Task<T> Post(T item);
+        Task<T> Create(T entity);
 
-        Task<T> Put(T item, int id);
+        Task<T> Update(T entity, int id);
 
         Task<bool> Delete(int id);
-
-
     }
 }

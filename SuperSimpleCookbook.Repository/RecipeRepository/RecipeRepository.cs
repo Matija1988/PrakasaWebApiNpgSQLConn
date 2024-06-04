@@ -8,34 +8,34 @@ using System.Threading.Tasks;
 
 namespace SuperSimpleCookbook.Repository.RecipeRepository
 {
-    public class RecipeRepository : IRepsitoryRecipe<Recipe>
+    public class RecipeRepository : IRepositoryRecipe<Recipe>
     {
-        public bool Delete(int id)
+        public Task<bool> Delete(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Recipe Get(int id)
+        public Task<Recipe> Get(int id)
         {
             throw new NotImplementedException();
         }
 
-        public List<Recipe> GetAll()
+        public Task<List<Recipe>> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public List<Recipe> GetNotActive()
+        public Task<List<Recipe>> GetNotActive()
         {
             throw new NotImplementedException();
         }
 
-        public Recipe Post(Recipe item)
+        public Task<Recipe> Post(Recipe item)
         {
             throw new NotImplementedException();
         }
 
-        public Recipe Put(Recipe item, int id)
+        public Task<Recipe> Put(Recipe item, int id)
         {
             throw new NotImplementedException();
         }

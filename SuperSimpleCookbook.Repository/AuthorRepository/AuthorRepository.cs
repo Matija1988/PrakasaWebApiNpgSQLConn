@@ -81,9 +81,9 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
                 await _connection.OpenAsync();
 
-                var reader = command.ExecuteReader();
+                var reader = await command.ExecuteReaderAsync();
 
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     listFromDB.Add(new Author
                     {
@@ -121,9 +121,9 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
             await _connection.OpenAsync();
 
-            var reader = command.ExecuteReader();
+            var reader = await command.ExecuteReaderAsync();
 
-            while (reader.Read())
+            while (await reader.ReadAsync())
             {
                 listFromDB.Add(new Author
                 {
@@ -191,8 +191,6 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 using var cmd = _connection.CreateCommand();
                 cmd.CommandText = commandText;
                 AddParameters(cmd, item);
-
-
 
                 cmd.Parameters.AddWithValue("@Uuid", uuid);
                 cmd.Parameters.AddWithValue("@Id", item.Id);

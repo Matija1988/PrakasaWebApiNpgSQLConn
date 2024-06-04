@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using SuperSimpleCookbook.Model;
+using SuperSimpleCookbook.Service.Common;
 
 namespace SuperSimpleCookbook.Controllers
 {
@@ -8,49 +9,99 @@ namespace SuperSimpleCookbook.Controllers
     [Route("[controller]")]
     public class RecipeController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
-        private readonly NpgsqlConnection _connection;
-        public RecipeController(IConfiguration configuration)
+
+
+        private readonly IRecipeService<Recipe> _service;
+        public RecipeController(IRecipeService<Recipe> service)
         {
-            _configuration = configuration;
-            _connection = new NpgsqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+            _service = service;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            string commandText = "SELECT * FROM \"Recipe\" where \"IsActive\" = true;";
-            var listFromDB = new List<Recipe>();
-            var command = new NpgsqlCommand(commandText, _connection);
+            var response = await _service.GetAll();
 
-            _connection.Open();
-
-            var reader = command.ExecuteReader();
-
-            while (reader.Read())
+            if (response == null)
             {
-                listFromDB.Add(new Recipe
-                {
-
-                    Id = reader.GetInt32(0),
-                    Title = reader.GetString(1),
-                    Subtitle = reader.GetString(2),
-                    Text = reader.GetString(3),
-                    IsActive = reader.GetBoolean(4),
-                    DateCreated = reader.GetDateTime(5),
-                    DateUpdated = reader.GetDateTime(6),
-
-                });
-            }
-            if (listFromDB is null)
-            {
-                return NotFound("No data in database!");
+                return NotFound();
             }
 
-            _connection.Close();
-            await reader.DisposeAsync();
+            return Ok(response);
 
-            return Ok(listFromDB);
         }
+        [HttpGet]
+        [Route("{id:int}")]
+        public async Task<IActionResult> GetbyId(int id)
+        {
+            var response = await _service.GetById(id);
+
+            if (response == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(response);
+
+        }
+
+        [HttpGet]
+        [Route("NotActive")]
+        public async Task<IActionResult> GetNotActive()
+        {
+            var response = await _service.GetNotActive();
+
+            if (response == null)
+            {
+                return NotFound();
+            }
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("CreateRecipe")]
+
+        public async Task<IActionResult> Post([FromBody] Recipe newRecipe)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var response = await _service.Create(newRecipe);
+
+            return StatusCode(StatusCodes.Status201Created, response);
+
+        }
+
+        [HttpPut]
+        [Route("UpdateRecipe/{id:int}")]
+        public async Task<IActionResult> Put([FromBody] Recipe newRecipe, int id)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var response = await _service.Update(newRecipe, id);
+
+            return Ok(response);
+
+        }
+
+        [HttpDelete]
+        [Route("Delete/{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var response = await _service.Delete(id);
+
+            if(response)
+            {
+                return Ok();    
+            }
+
+            return BadRequest();
+        }
+
     }
 }

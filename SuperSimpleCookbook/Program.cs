@@ -21,6 +21,9 @@ builder.Services.AddScoped((provider) => new NpgsqlConnection(connectionString))
 builder.Services.AddScoped<IAuthorService<Author>, AuthorService>();
 builder.Services.AddScoped<IRepositoryAuthor<Author>, AuthorRepository>();
 
+builder.Services.AddScoped<IRecipeService<Recipe>, RecipeService>(); 
+builder.Services.AddScoped<IRepositoryRecipe<Recipe>, RecipeRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
