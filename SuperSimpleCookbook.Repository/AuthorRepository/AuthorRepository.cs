@@ -140,12 +140,45 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
         public async Task<Author> Post(Author item)
         {
-            return null;
+            try
+            {
+                string commandText = "INSERT INTO \"Author\" (\"Uuid\", \"FirstName\", \"LastName\",\"DateOfBirth\", \"Bio\", \"IsActive\", \"DateCreated\", \"DateUpdated\") "
+                    + " VALUES (@Uuid, @FirstName, @LastName, @DateOfBirth, @Bio, @IsActive, @DateCreated, @DateUpdated) RETURNING \"Id\"";
+
+
+                using var cmd = _connection.CreateCommand();
+                cmd.CommandText = commandText;
+                AddParameters(cmd, item);
+                await _connection.OpenAsync();
+                var rowAffected = await cmd.ExecuteNonQueryAsync();
+                await _connection.CloseAsync();
+                await _connection.DisposeAsync();
+                return item;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public async Task<Author> Put(Author item, int id)
         {
             return null;
+        }
+
+        private void AddParameters(NpgsqlCommand command, Author author)
+        {
+            Guid guid = Guid.NewGuid();
+
+            command.Parameters.AddWithValue("@Uuid", author.Uuid = guid);
+            command.Parameters.AddWithValue("@FirstName", author.FirstName);
+            command.Parameters.AddWithValue("@LastName", author.LastName);
+            command.Parameters.AddWithValue("@DateOfBirth", author.DateOfBirth);
+            command.Parameters.AddWithValue("@Bio", author.Bio);
+            command.Parameters.AddWithValue("@IsActive", author.IsActive);
+            command.Parameters.AddWithValue("@DateCreated", author.DateCreated);
+            command.Parameters.AddWithValue("@DateUpdated", author.DateUpdated);
+
         }
     }
 }

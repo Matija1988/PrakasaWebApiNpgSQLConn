@@ -13,5 +13,7 @@ namespace SuperSimpleCookbook.Service.Common
         Task<T> GetByGuid(Guid uuid);
 
         Task<List<T>> GetNotActive();
+
+        Task<T> Create(T entity);
     }
 }

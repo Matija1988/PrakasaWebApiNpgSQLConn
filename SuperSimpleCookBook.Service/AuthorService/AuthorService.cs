@@ -17,6 +17,11 @@ namespace SuperSimpleCookbook.Service.AuthorService
             _repository = repository;
         }
 
+        public async Task<Author> Create(Author entity)
+        {
+            return await _repository.Post(entity);
+        }
+
         public async Task<List<Author>> GetAll()
         {
          return await _repository.GetAll();

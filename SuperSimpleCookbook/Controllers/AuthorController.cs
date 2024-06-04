@@ -72,25 +72,15 @@ namespace SuperSimpleCookbook.Controllers
 
         public async Task<IActionResult> Create([FromBody] Author author)
         {
-            try
+            if(!ModelState.IsValid)
             {
-                string commandText = "INSERT INTO \"Author\" (\"Uuid\", \"FirstName\", \"LastName\",\"DateOfBirth\", \"Bio\", \"IsActive\", \"DateCreated\", \"DateUpdated\") "
-                    + " VALUES (@Uuid, @FirstName, @LastName, @DateOfBirth, @Bio, @IsActive, @DateCreated, @DateUpdated) RETURNING \"Id\"";
+                return BadRequest();
+            }
 
 
-                using var cmd = _connection.CreateCommand();
-                cmd.CommandText = commandText;
-                AddParameters(cmd, author);
-                await _connection.OpenAsync();
-                var rowAffected = await cmd.ExecuteNonQueryAsync();
-                await _connection.CloseAsync();
-                await _connection.DisposeAsync();
-                return StatusCode(StatusCodes.Status201Created, author);
-            }
-            catch (Exception ex) 
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var response = await _service.Create(author);
+
+            return StatusCode(StatusCodes.Status201Created, response);
 
         }
 
@@ -105,7 +95,7 @@ namespace SuperSimpleCookbook.Controllers
 
             using var cmd = _connection.CreateCommand();
             cmd.CommandText = commandText;
-            AddParameters(cmd, author);
+          //  AddParameters(cmd, author);
 
             int tempId = id;
             author.Id = tempId;
@@ -143,20 +133,7 @@ namespace SuperSimpleCookbook.Controllers
             }
         }
 
-        private void AddParameters(NpgsqlCommand command, Author author)
-        {
-            Guid guid = Guid.NewGuid();
-            
-            command.Parameters.AddWithValue("@Uuid", author.Uuid = guid);
-            command.Parameters.AddWithValue("@FirstName", author.FirstName);
-            command.Parameters.AddWithValue("@LastName", author.LastName);
-            command.Parameters.AddWithValue("@DateOfBirth", author.DateOfBirth);
-            command.Parameters.AddWithValue("@Bio", author.Bio);
-            command.Parameters.AddWithValue("@IsActive", author.IsActive);
-            command.Parameters.AddWithValue("@DateCreated", author.DateCreated);
-            command.Parameters.AddWithValue("@DateUpdated", author.DateUpdated);
-
-        }
+      
 
 
     }
