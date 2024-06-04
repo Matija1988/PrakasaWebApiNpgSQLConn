@@ -13,15 +13,11 @@ namespace SuperSimpleCookbook.Controllers
     [Route("[controller]")]
     public class AuthorController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
-        private readonly NpgsqlConnection _connection;
+        
         private readonly IAuthorService<Author> _service;
         public AuthorController(IAuthorService<Author> service)
         {
             _service = service;
-
-            //_configuration = configuration;
-            //_connection = new NpgsqlConnection(_configuration.GetConnectionString("DefaultConnection"));
 
         }
 
