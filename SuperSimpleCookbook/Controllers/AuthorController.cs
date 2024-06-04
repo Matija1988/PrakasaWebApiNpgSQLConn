@@ -85,52 +85,30 @@ namespace SuperSimpleCookbook.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateAuthor/{id:int}")]
-        public async Task<IActionResult> Update([FromBody]Author author, int id)
+        [Route("UpdateAuthor/{uuid:Guid}")]
+        public async Task<IActionResult> Update([FromBody]Author author, Guid uuid)
         {
-            try { 
-            const string commandText = "UPDATE \"Author\" SET \"Id\" = @Id, \"Uuid\" =@Uuid, \"FirstName\" = @FirstName, " +
-                "\"LastName\" = @LastName, \"DateOfBirth\" = @DateOfBirth, \"Bio\" = @Bio, \"IsActive\" = @IsActive, " +
-       "\"DateUpdated\" = @DateUpdated WHERE \"Id\" = @Id;";
-
-            using var cmd = _connection.CreateCommand();
-            cmd.CommandText = commandText;
-          //  AddParameters(cmd, author);
-
-            int tempId = id;
-            author.Id = tempId;
-            cmd.Parameters.AddWithValue("@Id", author.Id);
-
-            await _connection.OpenAsync();
-            var rowAffected = await cmd.ExecuteNonQueryAsync();
-            await _connection.CloseAsync();
-            await _connection.DisposeAsync();
-            return StatusCode(StatusCodes.Status200OK, author);
-            }
-            catch(Exception ex) 
+            if (!ModelState.IsValid) 
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return BadRequest();
             }
+            var response = await _service.Update(author, uuid);
+
+            return Ok(response);
+
         }
 
         [HttpDelete]
-        [Route("DeleteAuthor/{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        [Route("DeleteAuthor/{uuid:Guid}")]
+        public async Task<IActionResult> Delete(Guid uuid)
         {
-            try { 
-            const string commandText = "DELETE FROM \"Author\" WHERE \"Id\" = @Id";
-            using var cmd = _connection.CreateCommand();
-            cmd.CommandText = commandText;
-            cmd.Parameters.AddWithValue("@Id", id);
-            await _connection.OpenAsync();
-            var rowAffected = await cmd.ExecuteNonQueryAsync();
-            await _connection.CloseAsync();
-            return StatusCode(StatusCodes.Status200OK); 
-            } 
-            catch(Exception ex)
+           var response = await _service.Delete(uuid);
+
+            if(response)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return Ok();
             }
+            return NotFound();
         }
 
       

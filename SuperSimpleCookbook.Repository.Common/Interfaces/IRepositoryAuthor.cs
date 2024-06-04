@@ -15,8 +15,8 @@ namespace SuperSimpleCookbook.Repository.Common.Interfaces
 
         Task<T>Post(T item);
 
-        Task<T> Put(T item, int id);
+        Task<T> Put(T item, Guid uuid);
 
-        Task<bool> Delete(int id);
+        Task<bool> Delete(Guid uuid);
     }
 }

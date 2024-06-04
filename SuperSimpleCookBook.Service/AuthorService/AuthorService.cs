@@ -22,6 +22,11 @@ namespace SuperSimpleCookbook.Service.AuthorService
             return await _repository.Post(entity);
         }
 
+        public Task<bool> Delete(Guid uuid)
+        {
+            return _repository.Delete(uuid);
+        }
+
         public async Task<List<Author>> GetAll()
         {
          return await _repository.GetAll();
@@ -36,6 +41,11 @@ namespace SuperSimpleCookbook.Service.AuthorService
         public async Task<List<Author>> GetNotActive()
         {
            return await _repository.GetNotActive();
+        }
+
+        public async Task<Author> Update(Author entity, Guid uuid)
+        {
+            return await _repository.Put(entity,uuid);
         }
     }
 }

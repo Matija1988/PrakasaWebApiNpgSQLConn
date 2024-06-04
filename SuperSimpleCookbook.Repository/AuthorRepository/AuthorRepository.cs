@@ -18,9 +18,23 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
         {
             _connection = new NpgsqlConnection("Host=localhost;Port=5432; User Id=postgres; Password=root;Database=Kuharica;");
         }
-        public async Task<bool> Delete(int id)
+        public async Task<bool> Delete(Guid uuid)
         {
-            return false;
+            try
+            {
+                const string commandText = "DELETE FROM \"Author\" WHERE \"Uuid\" = @uuid";
+                using var cmd = _connection.CreateCommand();
+                cmd.CommandText = commandText;
+                cmd.Parameters.AddWithValue("@Uuid", uuid);
+                await _connection.OpenAsync();
+                var rowAffected = await cmd.ExecuteNonQueryAsync();
+                await _connection.CloseAsync();
+                return rowAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
         public async Task<Author> Get(Guid uuid)
@@ -148,6 +162,11 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
                 using var cmd = _connection.CreateCommand();
                 cmd.CommandText = commandText;
+               
+                Guid guid = Guid.NewGuid();
+
+                cmd.Parameters.AddWithValue("@Uuid", item.Uuid = guid);
+
                 AddParameters(cmd, item);
                 await _connection.OpenAsync();
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
@@ -161,16 +180,38 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             }
         }
 
-        public async Task<Author> Put(Author item, int id)
+        public async Task<Author> Put(Author item, Guid uuid)
         {
-            return null;
+            try
+            {
+                const string commandText = "UPDATE \"Author\" SET \"Id\" = @Id, \"Uuid\" =@Uuid, \"FirstName\" = @FirstName, " +
+                    "\"LastName\" = @LastName, \"DateOfBirth\" = @DateOfBirth, \"Bio\" = @Bio, \"IsActive\" = @IsActive, " +
+           "\"DateUpdated\" = @DateUpdated WHERE \"Uuid\" = @Uuid;";
+
+                using var cmd = _connection.CreateCommand();
+                cmd.CommandText = commandText;
+                AddParameters(cmd, item);
+
+
+
+                cmd.Parameters.AddWithValue("@Uuid", uuid);
+                cmd.Parameters.AddWithValue("@Id", item.Id);
+
+                await _connection.OpenAsync();
+                var rowAffected = await cmd.ExecuteNonQueryAsync();
+                await _connection.CloseAsync();
+                await _connection.DisposeAsync();
+                return item;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);  
+            }
         }
 
         private void AddParameters(NpgsqlCommand command, Author author)
         {
-            Guid guid = Guid.NewGuid();
-
-            command.Parameters.AddWithValue("@Uuid", author.Uuid = guid);
+           
             command.Parameters.AddWithValue("@FirstName", author.FirstName);
             command.Parameters.AddWithValue("@LastName", author.LastName);
             command.Parameters.AddWithValue("@DateOfBirth", author.DateOfBirth);

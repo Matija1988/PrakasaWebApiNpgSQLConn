@@ -15,5 +15,9 @@ namespace SuperSimpleCookbook.Service.Common
         Task<List<T>> GetNotActive();
 
         Task<T> Create(T entity);
+
+        Task<T> Update(T entity, Guid uuid);
+
+        Task<bool> Delete(Guid uuid);
     }
 }
