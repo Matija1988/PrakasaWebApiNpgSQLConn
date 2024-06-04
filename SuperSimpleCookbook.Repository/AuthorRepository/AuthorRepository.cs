@@ -58,7 +58,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 {
                     response.Data = new Author
                     {
-
+                        
                         FirstName = reader.GetString(0),
                         LastName = reader.GetString(1),
 
@@ -260,18 +260,16 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             var response = new ServiceResponse<Author>();
             try
             {
-                const string commandText = "UPDATE \"Author\" SET \"Id\" = @Id, \"Uuid\" =@Uuid, \"FirstName\" = @FirstName, " +
+                const string commandText = "UPDATE \"Author\" SET  \"Uuid\" =@Uuid, \"FirstName\" = @FirstName, " +
                     "\"LastName\" = @LastName, \"DateOfBirth\" = @DateOfBirth, \"Bio\" = @Bio, \"IsActive\" = @IsActive, " +
            "\"DateUpdated\" = @DateUpdated WHERE \"Uuid\" = @Uuid;";
-
-
 
                 using var cmd = _connection.CreateCommand();
                 cmd.CommandText = commandText;
                 AddParameters(cmd, item);
 
                 cmd.Parameters.AddWithValue("@Uuid", uuid);
-                cmd.Parameters.AddWithValue("@Id", item.Id);
+               // cmd.Parameters.AddWithValue("@Id", item.Id);
 
                 await _connection.OpenAsync();
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
