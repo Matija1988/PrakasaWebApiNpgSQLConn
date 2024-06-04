@@ -6,9 +6,9 @@ namespace SuperSimpleCookbook.Service.Common
     {
          Task <ServiceResponse<List<T>>> GetAll();
 
-        Task<T> GetById(int id);
+        Task <ServiceResponse<T>> GetById(int id);
 
-        Task<List<T>> GetNotActive();
+        Task <ServiceResponse<List<T>>> GetNotActive();
 
         Task<T> Create(T entity);
 

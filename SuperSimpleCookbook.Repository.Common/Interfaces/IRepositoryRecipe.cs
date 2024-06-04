@@ -5,9 +5,9 @@ namespace SuperSimpleCookbook.Repository.Common.Interfaces
     public interface IRepositoryRecipe<T> where T : class
     {
         Task <ServiceResponse<List<T>>> GetAll();
-        Task<T> Get(int id);
+        Task <ServiceResponse<T>> Get(int id);
 
-        Task<List<T>> GetNotActive();
+        Task <ServiceResponse<List<T>>> GetNotActive();
 
         Task<T> Post(T item);
 

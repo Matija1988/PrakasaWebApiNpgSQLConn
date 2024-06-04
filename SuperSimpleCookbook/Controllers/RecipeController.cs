@@ -36,12 +36,12 @@ namespace SuperSimpleCookbook.Controllers
         {
             var response = await _service.GetById(id);
 
-            if (response == null)
+            if (response.Success == false)
             {
-                return NotFound();
+                return NotFound(response.Message);
             }
 
-            return Ok(response);
+            return Ok(response.Data);
 
         }
 
@@ -51,11 +51,11 @@ namespace SuperSimpleCookbook.Controllers
         {
             var response = await _service.GetNotActive();
 
-            if (response == null)
+            if (response.Success == false)
             {
-                return NotFound();
+                return NotFound(response.Message);
             }
-            return Ok(response);
+            return Ok(response.Data);
         }
 
         [HttpPost]

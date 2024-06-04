@@ -39,8 +39,10 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             }
         }
 
-        public async Task<Recipe> Get(int id)
+        public async Task <ServiceResponse<Recipe>> Get(int id)
         {
+            var response = new ServiceResponse<Recipe>();
+
             string commandText = "SELECT \"Title\", \"Subtitle\"  FROM \"Recipe\" WHERE \"Id\" = @id;";
 
             var command = new NpgsqlCommand(commandText, _connection);
@@ -53,7 +55,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             {
                 if (await reader.ReadAsync())
                 {
-                    var recipe = new Recipe
+                    response.Data = new Recipe
                     {
 
                         Title = reader.GetString(0),
@@ -63,12 +65,17 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
 
                     await _connection.CloseAsync();
                     await _connection.DisposeAsync();
-                    return recipe;
+
+                    response.Success = true;
+
+                    return response;
 
                 }
                 else
                 {
-                    return null;
+                    response.Success = false;
+                    response.Message = "No recipe with id: " + id + " in database!";
+                    return response;
                 }
             }
         }
@@ -118,9 +125,12 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
 
 
 
-        public async Task<List<Recipe>> GetNotActive()
+        public async Task <ServiceResponse<List<Recipe>>> GetNotActive()
         {
+            var response = new ServiceResponse <List<Recipe>>();
+
             string commandText = "SELECT * FROM \"Recipe\" where \"IsActive\" = false;";
+            
             var listFromDB = new List<Recipe>();
             var command = new NpgsqlCommand(commandText, _connection);
 
@@ -141,18 +151,23 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
                     DateCreated = reader.GetDateTime(5),
                     DateUpdated = reader.GetDateTime(6)
 
-
                 });
             }
+
             if (listFromDB is null)
             {
-                return null;
+                response.Success = false;
+                response.Message = "No data in database";
+                return response;
             }
 
             await _connection.CloseAsync();
             await reader.DisposeAsync();
 
-            return listFromDB;
+            response.Data = listFromDB;
+            response.Success = true;
+
+            return response;
         }
 
         public async Task<Recipe> Post(Recipe item)

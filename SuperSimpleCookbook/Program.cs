@@ -7,6 +7,7 @@ using SuperSimpleCookbook.Repository.Common.Interfaces;
 using SuperSimpleCookbook.Repository.RecipeRepository;
 using SuperSimpleCookbook.Service.AuthorService;
 using SuperSimpleCookbook.Service.Common;
+using SuperSimpleCookbook.Service.RecipeService;
 
 var builder = WebApplication.CreateBuilder(args);
 

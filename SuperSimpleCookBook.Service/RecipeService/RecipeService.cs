@@ -9,7 +9,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SuperSimpleCookbook.Service.AuthorService
+namespace SuperSimpleCookbook.Service.RecipeService
 {
     public class RecipeService : IRecipeService<Recipe>
     {
@@ -30,27 +30,41 @@ namespace SuperSimpleCookbook.Service.AuthorService
             return _repository.Delete(id);
         }
 
-        public async Task <ServiceResponse<List<Recipe>>> GetAll()
+        public async Task<ServiceResponse<List<Recipe>>> GetAll()
         {
             var response = await _repository.GetAll();
 
-            if(response.Success == false)
+            if (response.Success == false)
             {
                 response.Message = "No data in Database";
                 response.Success = false;
             }
 
-           return response;
+            return response;
         }
 
-        public Task<Recipe> GetById(int id)
+        public async Task<ServiceResponse<Recipe>> GetById(int id)
         {
-            return _repository.Get(id); 
+            var response = await _repository.Get(id);
+
+            if (response.Success == false)
+            {
+                return response;
+            }
+
+            return response;
         }
 
-        public Task<List<Recipe>> GetNotActive()
+        public async Task <ServiceResponse<List<Recipe>>> GetNotActive()
         {
-            return _repository.GetNotActive();
+            var response = await _repository.GetNotActive();
+
+            if (response.Success == false) 
+            {
+                return response;
+            }
+
+            return response;
         }
 
         public Task<Recipe> Update(Recipe entity, int id)
