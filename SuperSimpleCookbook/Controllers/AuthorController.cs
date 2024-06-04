@@ -6,6 +6,7 @@ using System;
 using System.Data;
 using SuperSimpleCookbook.Model;
 using SuperSimpleCookbook.Service.Common;
+using SuperSimpleCookbook.Model.Model;
 
 namespace SuperSimpleCookbook.Controllers
 {
@@ -14,8 +15,8 @@ namespace SuperSimpleCookbook.Controllers
     public class AuthorController : ControllerBase
     {
         
-        private readonly IAuthorService<Author> _service;
-        public AuthorController(IAuthorService<Author> service)
+        private readonly IAuthorService<Author, AuthorRecipe> _service;
+        public AuthorController(IAuthorService<Author, AuthorRecipe> service)
         {
             _service = service;
 
@@ -107,7 +108,20 @@ namespace SuperSimpleCookbook.Controllers
             return NotFound();
         }
 
-      
+        [HttpGet]
+        [Route("AuthorRecipe/{uuid:Guid}")]
+
+        public async Task<IActionResult> GetAuthorRecipe(Guid uuid)
+        {
+            var response = await _service.GetRecepiesByAuthorGuid(uuid);
+
+            if(response != null)
+            {
+                return Ok(response);
+            }
+            return NotFound();
+
+        }
 
 
     }

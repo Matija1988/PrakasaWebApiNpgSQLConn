@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SuperSimpleCookbook.Service.Common
 {
-    public interface IAuthorService<T> where T : class
+    public interface IAuthorService<T, T2> where T : class
     {
         Task<List<T>> GetAll();
 
@@ -19,5 +19,7 @@ namespace SuperSimpleCookbook.Service.Common
         Task<T> Update(T entity, Guid uuid);
 
         Task<bool> Delete(Guid uuid);
+
+        Task<List<T2>> GetRecepiesByAuthorGuid(Guid uuid);
     }
 }

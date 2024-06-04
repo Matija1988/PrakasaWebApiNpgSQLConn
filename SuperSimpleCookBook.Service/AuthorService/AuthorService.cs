@@ -1,4 +1,5 @@
 ﻿using SuperSimpleCookbook.Model;
+using SuperSimpleCookbook.Model.Model;
 using SuperSimpleCookbook.Repository.Common.Interfaces;
 using SuperSimpleCookbook.Service.Common;
 using System;
@@ -9,10 +10,10 @@ using System.Threading.Tasks;
 
 namespace SuperSimpleCookbook.Service.AuthorService
 {
-    public class AuthorService : IAuthorService<Author>
+    public class AuthorService : IAuthorService<Author, AuthorRecipe>
     {
-        private readonly IRepositoryAuthor<Author> _repository; 
-        public AuthorService(IRepositoryAuthor<Author> repository) 
+        private readonly IRepositoryAuthor<Author, AuthorRecipe> _repository; 
+        public AuthorService(IRepositoryAuthor<Author, AuthorRecipe> repository) 
         {
             _repository = repository;
         }
@@ -43,9 +44,16 @@ namespace SuperSimpleCookbook.Service.AuthorService
            return await _repository.GetNotActive();
         }
 
+        public async Task<List<AuthorRecipe>> GetRecepiesByAuthorGuid(Guid uuid)
+        {
+            return await _repository.GetRecepiesByAuthorGuid(uuid);
+        }
+
         public async Task<Author> Update(Author entity, Guid uuid)
         {
             return await _repository.Put(entity,uuid);
         }
+
+
     }
 }

@@ -1,8 +1,10 @@
 using Npgsql;
 using SuperSimpleCookbook;
 using SuperSimpleCookbook.Model;
+using SuperSimpleCookbook.Model.Model;
 using SuperSimpleCookbook.Repository.AuthorRepository;
 using SuperSimpleCookbook.Repository.Common.Interfaces;
+using SuperSimpleCookbook.Repository.RecipeRepository;
 using SuperSimpleCookbook.Service.AuthorService;
 using SuperSimpleCookbook.Service.Common;
 
@@ -18,8 +20,8 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddScoped((provider) => new NpgsqlConnection(connectionString));
 
-builder.Services.AddScoped<IAuthorService<Author>, AuthorService>();
-builder.Services.AddScoped<IRepositoryAuthor<Author>, AuthorRepository>();
+builder.Services.AddScoped<IAuthorService<Author, AuthorRecipe>, AuthorService>();
+builder.Services.AddScoped<IRepositoryAuthor<Author, AuthorRecipe>, AuthorRepository>();
 
 builder.Services.AddScoped<IRecipeService<Recipe>, RecipeService>(); 
 builder.Services.AddScoped<IRepositoryRecipe<Recipe>, RecipeRepository>();

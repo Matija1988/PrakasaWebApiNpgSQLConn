@@ -1,5 +1,6 @@
 ﻿using Npgsql;
 using SuperSimpleCookbook.Model;
+using SuperSimpleCookbook.Model.Model;
 using SuperSimpleCookbook.Repository.Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SuperSimpleCookbook.Repository.AuthorRepository
 {
-    public class AuthorRepository : IRepositoryAuthor<Author>
+    public class AuthorRepository : IRepositoryAuthor<Author, AuthorRecipe>
     {
        
         private readonly NpgsqlConnection _connection;
@@ -152,6 +153,43 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             return listFromDB;
         }
 
+        public async Task<List<AuthorRecipe>> GetRecepiesByAuthorGuid(Guid uuid)
+        {
+            string commandText = "SELECT \"Author\".\"FirstName\", \"Author\".\"LastName\", \"Recipe\".\"Title\" " +
+                "FROM \"AuthorRecipe\"" +
+                " RIGHT JOIN \"Author\" ON \"AuthorRecipe\".\"Id\" = \"Author\".\"Id\"" +
+                " RIGHT JOIN \"Recipe\" ON \"AuthorRecipe\".\"Id\" = \"Recipe\".\"Id\"" +
+                " WHERE \"Author\".\"Uuid\" = @uuid";
+
+            var listFromDB = new List<AuthorRecipe>();
+            var command = new NpgsqlCommand(commandText, _connection);
+
+            command.Parameters.AddWithValue("@Uuid", NpgsqlTypes.NpgsqlDbType.Uuid, uuid);
+            await _connection.OpenAsync();
+
+            var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                listFromDB.Add(new AuthorRecipe
+                {
+                    FirstName = reader.GetString(0),
+                    LastName = reader.GetString(1),
+                    Title = reader.GetString(2)
+
+                });
+            }
+            if (listFromDB is null)
+            {
+                return null;
+            }
+
+            await _connection.CloseAsync();
+            await reader.DisposeAsync();
+
+            return listFromDB;
+        }
+
         public async Task<Author> Post(Author item)
         {
             try
@@ -187,6 +225,8 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 const string commandText = "UPDATE \"Author\" SET \"Id\" = @Id, \"Uuid\" =@Uuid, \"FirstName\" = @FirstName, " +
                     "\"LastName\" = @LastName, \"DateOfBirth\" = @DateOfBirth, \"Bio\" = @Bio, \"IsActive\" = @IsActive, " +
            "\"DateUpdated\" = @DateUpdated WHERE \"Uuid\" = @Uuid;";
+
+
 
                 using var cmd = _connection.CreateCommand();
                 cmd.CommandText = commandText;
