@@ -12,9 +12,10 @@ create table "Author"(
 	
 );
 
+
 select * from "Author";
 
-delete from "Author" where "Id" = 6;
+delete from "Author" where "Id" = 7;
 
 create table "Recipe"(
 
@@ -38,6 +39,10 @@ create table "AuthorRecipe"(
 alter table "Author" alter column "DateOfBirth" type timestamp;
 alter table "Author" alter column "DateCreated" type timestamp;
 alter table "Author" alter column "DateUpdated" type timestamp;
+
+
+alter table "Recipe" alter column "DateCreated" type timestamp;
+alter table "Recipe" alter column "DateUpdated" type timestamp;
 
 
 alter table "AuthorRecipe" add constraint "Fk_AuthorRecipe_Author_AuthorId" foreign key ("AuthorId") references "Author" ("Id");
