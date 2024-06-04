@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SuperSimpleCookbook.Model.Model;
 
 namespace SuperSimpleCookbook.Repository.Common.Interfaces
 {
     public interface IRepositoryRecipe<T> where T : class
     {
-        Task<List<T>> GetAll();
+        Task <ServiceResponse<List<T>>> GetAll();
         Task<T> Get(int id);
 
         Task<List<T>> GetNotActive();

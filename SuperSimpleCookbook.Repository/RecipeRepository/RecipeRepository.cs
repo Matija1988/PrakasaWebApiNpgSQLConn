@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using Npgsql;
 using SuperSimpleCookbook.Model;
+using SuperSimpleCookbook.Model.Model;
 using SuperSimpleCookbook.Repository.Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -72,8 +73,10 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             }
         }
 
-        public async Task<List<Recipe>> GetAll()
+        public async Task <ServiceResponse<List<Recipe>>> GetAll()
         {
+            var response = new ServiceResponse<List<Recipe>>();
+
             string commandText = "SELECT * FROM \"Recipe\" where \"IsActive\" = true;";
             var listFromDB = new List<Recipe>();
             var command = new NpgsqlCommand(commandText, _connection);
@@ -105,7 +108,10 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             _connection.Close();
             await reader.DisposeAsync();
 
-            return listFromDB;
+            response.Success = true;
+            response.Data = listFromDB;
+
+            return response;
         }
 
 

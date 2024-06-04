@@ -1,4 +1,5 @@
 ﻿using SuperSimpleCookbook.Model;
+using SuperSimpleCookbook.Model.Model;
 using SuperSimpleCookbook.Repository.Common.Interfaces;
 using SuperSimpleCookbook.Service.Common;
 using System;
@@ -29,9 +30,17 @@ namespace SuperSimpleCookbook.Service.AuthorService
             return _repository.Delete(id);
         }
 
-        public Task<List<Recipe>> GetAll()
+        public async Task <ServiceResponse<List<Recipe>>> GetAll()
         {
-           return _repository.GetAll();
+            var response = await _repository.GetAll();
+
+            if(response.Success == false)
+            {
+                response.Message = "No data in Database";
+                response.Success = false;
+            }
+
+           return response;
         }
 
         public Task<Recipe> GetById(int id)

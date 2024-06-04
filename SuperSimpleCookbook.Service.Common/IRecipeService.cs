@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SuperSimpleCookbook.Model.Model;
 
 namespace SuperSimpleCookbook.Service.Common
 {
     public interface IRecipeService<T> where T : class
     {
-        Task<List<T>> GetAll();
+         Task <ServiceResponse<List<T>>> GetAll();
 
         Task<T> GetById(int id);
 

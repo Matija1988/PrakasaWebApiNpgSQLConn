@@ -22,12 +22,12 @@ namespace SuperSimpleCookbook.Controllers
         {
             var response = await _service.GetAll();
 
-            if (response == null)
+            if (response.Success == false)
             {
-                return NotFound();
+                return NotFound(response.Message);
             }
 
-            return Ok(response);
+            return Ok(response.Data);
 
         }
         [HttpGet]
