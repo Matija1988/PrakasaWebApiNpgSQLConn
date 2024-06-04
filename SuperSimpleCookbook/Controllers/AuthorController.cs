@@ -124,11 +124,11 @@ namespace SuperSimpleCookbook.Controllers
         {
             var response = await _service.GetRecepiesByAuthorGuid(uuid);
 
-            if(response != null)
+            if(response.Success == false)
             {
-                return Ok(response);
+                return NotFound(response.Message);
             }
-            return NotFound();
+            return Ok(response.Data);
 
         }
 

@@ -71,14 +71,28 @@ namespace SuperSimpleCookbook.Service.AuthorService
             return response;
         }
 
-        public async Task<List<AuthorRecipe>> GetRecepiesByAuthorGuid(Guid uuid)
+        public async Task <ServiceResponse<List<AuthorRecipe>>> GetRecepiesByAuthorGuid(Guid uuid)
         {
-            return await _repository.GetRecepiesByAuthorGuid(uuid);
+            var response = await _repository.GetRecepiesByAuthorGuid(uuid);
+
+            if(response.Success == false)
+            {
+                return response;
+            }
+
+            return response;
         }
 
-        public async Task<Author> Update(Author entity, Guid uuid)
+        public async Task <ServiceResponse<Author>> Update(Author entity, Guid uuid)
         {
-            return await _repository.Put(entity,uuid);
+            var response = await _repository.Put(entity,uuid);
+
+            if (response.Success == false) 
+            {
+                return response;
+            }
+            return response;
+
         }
 
 

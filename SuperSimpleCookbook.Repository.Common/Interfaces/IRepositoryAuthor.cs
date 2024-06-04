@@ -20,6 +20,6 @@ namespace SuperSimpleCookbook.Repository.Common.Interfaces
 
         Task<bool> Delete(Guid uuid);
 
-        Task<List<T2>> GetRecepiesByAuthorGuid(Guid uuid);
+        Task <ServiceResponse<List<T2>>> GetRecepiesByAuthorGuid(Guid uuid);
     }
 }

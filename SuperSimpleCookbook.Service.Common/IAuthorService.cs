@@ -21,6 +21,6 @@ namespace SuperSimpleCookbook.Service.Common
 
         Task<bool> Delete(Guid uuid);
 
-        Task<List<T2>> GetRecepiesByAuthorGuid(Guid uuid);
+        Task <ServiceResponse<List<T2>>> GetRecepiesByAuthorGuid(Guid uuid);
     }
 }

@@ -176,8 +176,10 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             return response;
         }
 
-        public async Task<List<AuthorRecipe>> GetRecepiesByAuthorGuid(Guid uuid)
+        public async Task <ServiceResponse<List<AuthorRecipe>>> GetRecepiesByAuthorGuid(Guid uuid)
         {
+            var response = new ServiceResponse<List<AuthorRecipe>>();
+
             string commandText = "SELECT \"Author\".\"FirstName\", \"Author\".\"LastName\", \"Recipe\".\"Title\" " +
                 "FROM \"Author\"" +
                 " INNER JOIN \"AuthorRecipe\" ON \"Author\".\"Id\" = \"AuthorRecipe\".\"AuthorId\"" +
@@ -204,13 +206,18 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             }
             if (listFromDB is null)
             {
-                return null;
+                response.Success = false;
+                response.Message = "No data in database!";
+                return response;
             }
 
             await _connection.CloseAsync();
             await reader.DisposeAsync();
 
-            return listFromDB;
+            response.Data = listFromDB;
+            response.Success = true;
+
+            return response;
         }
 
         public async Task <ServiceResponse<Author>> Post(Author item)
