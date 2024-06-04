@@ -18,9 +18,16 @@ namespace SuperSimpleCookbook.Service.AuthorService
             _repository = repository;
         }
 
-        public async Task<Author> Create(Author entity)
+        public async Task <ServiceResponse<Author>> Create(Author entity)
         {
-            return await _repository.Post(entity);
+            var response = await _repository.Post(entity);
+
+            if(response.Success == false)
+            {
+                return response;
+            }
+
+            return response;
         }
 
         public Task<bool> Delete(Guid uuid)
@@ -28,20 +35,40 @@ namespace SuperSimpleCookbook.Service.AuthorService
             return _repository.Delete(uuid);
         }
 
-        public async Task<List<Author>> GetAll()
+        public async Task <ServiceResponse<List<Author>>> GetAll()
         {
-         return await _repository.GetAll();
+            var response = await _repository.GetAll();
+
+            if(response.Success == false)
+            {
+                return response;
+            }
+            return response;
             
         }
 
-        public async Task<Author> GetByGuid(Guid uuid)
+        public async Task <ServiceResponse<Author>> GetByGuid(Guid uuid)
         {
-            return await _repository.Get(uuid);
+            var response = await _repository.Get(uuid);
+
+            if(response.Success == false)
+            {
+                return response;
+            }
+
+            return response;
         }
 
-        public async Task<List<Author>> GetNotActive()
+        public async Task <ServiceResponse<List<Author>>> GetNotActive()
         {
-           return await _repository.GetNotActive();
+            var response = await _repository.GetNotActive();
+
+            if(response.Success == false)
+            {
+                return response;
+            }
+
+            return response;
         }
 
         public async Task<List<AuthorRecipe>> GetRecepiesByAuthorGuid(Guid uuid)

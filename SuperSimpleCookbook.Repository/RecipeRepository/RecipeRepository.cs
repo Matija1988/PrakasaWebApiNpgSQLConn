@@ -196,7 +196,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Error in recipe repository post method " + ex.Message;
+                response.Message = "Unexpected error in recipe repository post method " + ex.Message;
                 return response;
             }
         }
@@ -231,7 +231,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Update failed " + ex.Message;
+                response.Message = "Unexpected error at recipe repository put method " + ex.Message;
                 return response;
             }
         }

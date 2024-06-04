@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SuperSimpleCookbook.Model.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,14 +9,14 @@ namespace SuperSimpleCookbook.Repository.Common.Interfaces
 {
     public interface IRepositoryAuthor<T , T2> where T : class
     {
-        Task<List<T>> GetAll();
-        Task<T> Get(Guid uuid);
+        Task <ServiceResponse<List<T>>> GetAll();
+        Task <ServiceResponse<T>> Get(Guid uuid);
 
-         Task<List<T>> GetNotActive();
+         Task <ServiceResponse<List<T>>> GetNotActive();
 
-        Task<T>Post(T item);
+        Task <ServiceResponse<T>> Post(T item);
 
-        Task<T> Put(T item, Guid uuid);
+        Task <ServiceResponse<T>> Put(T item, Guid uuid);
 
         Task<bool> Delete(Guid uuid);
 

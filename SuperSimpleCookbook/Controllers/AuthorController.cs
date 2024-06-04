@@ -25,27 +25,27 @@ namespace SuperSimpleCookbook.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var listFromDB = await _service.GetAll();
+            var response = await _service.GetAll();
 
-            if (listFromDB == null) 
+            if (response.Success == false) 
             {
-                return NotFound();
+                return NotFound(response.Message);
             }
 
-            return Ok(listFromDB);
+            return Ok(response.Data);
         }
 
         [HttpGet]
         [Route("NotActive")]
         public async Task<IActionResult> GetAllNotActive()
         {
-            var listFromDb = await _service.GetNotActive();
+            var response = await _service.GetNotActive();
 
-            if (listFromDb == null)
+            if (response.Success == false)
             {
-                return NotFound();
+                return NotFound(response.Message);
             }
-            return Ok(listFromDb);
+            return Ok(response.Data);
         }
 
 
@@ -53,14 +53,14 @@ namespace SuperSimpleCookbook.Controllers
         [Route("{uuid:guid}")]
         public async Task<IActionResult> GetByGuid(Guid Uuid)
         {
-            var entityFromDb = await _service.GetByGuid(Uuid);
+            var response = await _service.GetByGuid(Uuid);
 
-            if (entityFromDb is null)
+            if (response.Success == false)
             {
-                return NotFound();
+                return NotFound(response.Message);
             }
 
-            return Ok(entityFromDb);    
+            return Ok(response.Data);    
 
         }
 
@@ -74,10 +74,14 @@ namespace SuperSimpleCookbook.Controllers
                 return BadRequest();
             }
 
-
             var response = await _service.Create(author);
 
-            return StatusCode(StatusCodes.Status201Created, response);
+            if (response.Success == false)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
+            }
+
+            return StatusCode(StatusCodes.Status201Created, response.Data);
 
         }
 
@@ -91,7 +95,12 @@ namespace SuperSimpleCookbook.Controllers
             }
             var response = await _service.Update(author, uuid);
 
-            return Ok(response);
+            if (response.Success == false)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
+            }
+
+            return Ok(response.Data);
 
         }
 

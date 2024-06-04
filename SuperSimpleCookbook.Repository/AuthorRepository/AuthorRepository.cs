@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 
 namespace SuperSimpleCookbook.Repository.AuthorRepository
 {
@@ -39,8 +40,10 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             }
         }
 
-        public async Task<Author> Get(Guid uuid)
+        public async Task <ServiceResponse<Author>> Get(Guid uuid)
         {
+            var response = new ServiceResponse<Author>();   
+
             string commandText = "SELECT \"FirstName\", \"LastName\"  FROM \"Author\" WHERE \"Uuid\" = @uuid;";
 
             var command = new NpgsqlCommand(commandText, _connection);
@@ -53,7 +56,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             {
                 if (await reader.ReadAsync())
                 {
-                    var author = new Author
+                    response.Data = new Author
                     {
 
                         FirstName = reader.GetString(0),
@@ -63,18 +66,24 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
                     await _connection.CloseAsync();
                     await _connection.DisposeAsync();
-                    return author;
+                    
+                    response.Success = true;
+
+                    return response;
 
                 }
                 else
                 {
-                    return null;
+                    response.Success = false;
+                    response.Message = "No author found in DB";
+                    return response;
                 }
             }
         }
 
-        public async Task<List<Author>> GetAll()
+        public async Task <ServiceResponse<List<Author>>> GetAll()
         {
+            var response = new ServiceResponse<List<Author>>();
             try
             {
                 string commandText = "SELECT * FROM \"Author\" where \"IsActive\" = true;";
@@ -106,17 +115,24 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 await _connection.CloseAsync();
                 await reader.DisposeAsync();
 
-                return listFromDB;
+                response.Data = listFromDB;
+                response.Success = true;
+
+                return response;
             }
             catch (Exception ex) 
-            { 
-                throw new Exception(ex.Message);
+            {
+                response.Success = false;
+                response.Message = "No data found in database";
+                return response;
             }
 
         }
 
-        public async Task<List<Author>> GetNotActive()
+        public async Task <ServiceResponse<List<Author>>> GetNotActive()
         {
+            var response = new ServiceResponse<List<Author>>();
+
             string commandText = "SELECT * FROM \"Author\" where \"IsActive\" = false;";
             var listFromDB = new List<Author>();
             var command = new NpgsqlCommand(commandText, _connection);
@@ -145,13 +161,19 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             }
             if(listFromDB is null)
             {
-                return null;
+                response.Success =false;
+                response.Message = "No data in database";
+
+                return response;
             }
 
             await _connection.CloseAsync();
             await reader.DisposeAsync();
 
-            return listFromDB;
+            response.Data = listFromDB;
+            response.Success = true;
+
+            return response;
         }
 
         public async Task<List<AuthorRecipe>> GetRecepiesByAuthorGuid(Guid uuid)
@@ -191,8 +213,10 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             return listFromDB;
         }
 
-        public async Task<Author> Post(Author item)
+        public async Task <ServiceResponse<Author>> Post(Author item)
         {
+            var response = new ServiceResponse<Author>();
+
             try
             {
                 string commandText = "INSERT INTO \"Author\" (\"Uuid\", \"FirstName\", \"LastName\",\"DateOfBirth\", \"Bio\", \"IsActive\", \"DateCreated\", \"DateUpdated\") "
@@ -211,16 +235,22 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
                 await _connection.CloseAsync();
                 await _connection.DisposeAsync();
-                return item;
+
+                response.Data = item;
+                response.Success = true;
+                return response;
             }
             catch (Exception ex)
             {
-                return null;
+                response.Success = false;
+                response.Message = "Unexpected error at author repository post method! " + ex.Message; 
+                return response;
             }
         }
 
-        public async Task<Author> Put(Author item, Guid uuid)
+        public async Task <ServiceResponse<Author>> Put(Author item, Guid uuid)
         {
+            var response = new ServiceResponse<Author>();
             try
             {
                 const string commandText = "UPDATE \"Author\" SET \"Id\" = @Id, \"Uuid\" =@Uuid, \"FirstName\" = @FirstName, " +
@@ -240,11 +270,17 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
                 await _connection.CloseAsync();
                 await _connection.DisposeAsync();
-                return item;
+
+                response.Success = true;
+                response.Data = item;
+
+                return response;
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);  
+                response.Success = false;
+                response.Message = "Unexpected error at author repository put method! " + ex.Message;
+                return response;
             }
         }
 

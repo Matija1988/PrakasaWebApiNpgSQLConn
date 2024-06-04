@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SuperSimpleCookbook.Model.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,15 +9,15 @@ namespace SuperSimpleCookbook.Service.Common
 {
     public interface IAuthorService<T, T2> where T : class
     {
-        Task<List<T>> GetAll();
+        Task <ServiceResponse<List<T>>> GetAll();
 
-        Task<T> GetByGuid(Guid uuid);
+        Task <ServiceResponse<T>> GetByGuid(Guid uuid);
 
-        Task<List<T>> GetNotActive();
+        Task <ServiceResponse<List<T>>> GetNotActive();
 
-        Task<T> Create(T entity);
+        Task <ServiceResponse<T>> Create(T entity);
 
-        Task<T> Update(T entity, Guid uuid);
+        Task <ServiceResponse<T>> Update(T entity, Guid uuid);
 
         Task<bool> Delete(Guid uuid);
 
