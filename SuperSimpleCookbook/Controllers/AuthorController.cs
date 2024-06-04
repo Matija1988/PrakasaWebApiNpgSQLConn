@@ -1,9 +1,11 @@
 ﻿using Npgsql;
-using SuperSimpleCookbook.Model;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Data;
+using SuperSimpleCookbook.Model;
+using SuperSimpleCookbook.Service.Common;
 
 namespace SuperSimpleCookbook.Controllers
 {
@@ -13,50 +15,25 @@ namespace SuperSimpleCookbook.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly NpgsqlConnection _connection;
-        public AuthorController(IConfiguration configuration)
+        private readonly IAuthorService<Author> _service;
+        public AuthorController(IAuthorService<Author> service)
         {
-            _configuration = configuration;
-            _connection = new NpgsqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+            _service = service;
+
+            //_configuration = configuration;
+            //_connection = new NpgsqlConnection(_configuration.GetConnectionString("DefaultConnection"));
 
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            var listFromDB = await _service.GetAll();
 
-
-            string commandText = "SELECT * FROM \"Author\" where \"IsActive\" = true;";
-            var listFromDB = new List<Author>();
-            var command = new NpgsqlCommand(commandText, _connection);
-
-            await  _connection.OpenAsync();
-
-            var reader = command.ExecuteReader();
-
-            while (reader.Read())
+            if (listFromDB == null) 
             {
-                listFromDB.Add(new Author
-                {
-
-                    Id = reader.GetInt32(0),
-                    Uuid = reader.GetGuid(1),
-                    FirstName = reader.GetString(2),
-                    LastName = reader.GetString(3),
-                    DateOfBirth = reader.GetDateTime(4),
-                    Bio = reader.GetString(5),
-                    IsActive = reader.GetBoolean(6),
-                    DateCreated = reader.GetDateTime(7),
-                    DateUpdated = reader.GetDateTime(8),
-
-                });
+                return NotFound();
             }
-            if (listFromDB is null)
-            {
-                return NotFound("No data in database!");
-            }
-
-            await  _connection.CloseAsync();
-            await reader.DisposeAsync();
 
             return Ok(listFromDB);
         }
@@ -65,82 +42,28 @@ namespace SuperSimpleCookbook.Controllers
         [Route("NotActive")]
         public async Task<IActionResult> GetAllNotActive()
         {
+            var listFromDb = await _service.GetNotActive();
 
-
-            string commandText = "SELECT * FROM \"Author\" where \"IsActive\" = false;";
-            var listFromDB = new List<Author>();
-            var command = new NpgsqlCommand(commandText, _connection);
-
-            await _connection.OpenAsync();
-
-            var reader = command.ExecuteReader();
-
-            while (reader.Read())
+            if (listFromDb == null)
             {
-                listFromDB.Add(new Author
-                {
-
-                    Id = reader.GetInt32(0),
-                    Uuid = reader.GetGuid(1),
-                    FirstName = reader.GetString(2),
-                    LastName = reader.GetString(3),
-                    DateOfBirth = reader.GetDateTime(4),
-                    Bio = reader.GetString(5),
-                    IsActive = reader.GetBoolean(6),
-                    DateCreated = reader.GetDateTime(7),
-                    DateUpdated = reader.GetDateTime(8)
-
-
-                });
+                return NotFound();
             }
-            if (listFromDB is null)
-            {
-                return NotFound("No data in database!");
-            }
-
-            await _connection.CloseAsync();
-            await reader.DisposeAsync();
-
-            return Ok(listFromDB);
+            return Ok(listFromDb);
         }
 
 
         [HttpGet]
-        [Route("{guid}")]
-        public async Task<IActionResult> GetByGuid(Guid guid)
+        [Route("{uuid:guid}")]
+        public async Task<IActionResult> GetByGuid(Guid Uuid)
         {
-            string commandText = "SELECT * FROM \"Author\" WHERE \"Uuid\" = @guid;";
+            var entityFromDb = await _service.GetByGuid(Uuid);
 
-            var command = new NpgsqlCommand(commandText, _connection);
-            command.Parameters.AddWithValue("@guid", guid);
-
-            await _connection.OpenAsync();
-
-            var reader = command.ExecuteReader();
-
-            var author = new Author
-            {
-                Id = reader.GetInt32(0),
-                Uuid = reader.GetGuid(1),
-                FirstName = reader.GetString(2),
-                LastName = reader.GetString(3),
-                DateOfBirth = reader.GetDateTime(4),
-                Bio = reader.GetString(5),
-                IsActive = reader.GetBoolean(6),
-                DateCreated = reader.GetDateTime(7),
-                DateUpdated = reader.GetDateTime(8)
-            };
-
-
-            if (author is null)
+            if (entityFromDb is null)
             {
                 return NotFound();
             }
 
-            await _connection.CloseAsync();
-            await _connection.DisposeAsync();
-
-            return Ok(author);
+            return Ok(entityFromDb);    
 
         }
 
