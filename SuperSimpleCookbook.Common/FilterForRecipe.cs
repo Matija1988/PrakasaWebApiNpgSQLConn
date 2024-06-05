@@ -8,20 +8,14 @@ namespace SuperSimpleCookbook.Common
 {
     public class FilterForRecipe
     {
-        public int? Id { get; set; } = null;
 
-        public decimal? MinPrice { get; set; } = null;
+        public string? Title { get; set; } 
 
-        public decimal? MaxPrice { get; set; } = null;
+        public string? Subtitle { get; set; } 
 
-        public DateTime? StartDate { get; set; } = null;
+        public DateTime? DateCreated { get; set; } 
 
-        public DateTime? EndDate { get; set; } = null;
-
-        public Guid? AuthorGuid { get; set; } = null;
-
-        public string? SearchQuery { get; set; } = string.Empty;
-
+        
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using SuperSimpleCookbook.Common;
 using SuperSimpleCookbook.Model;
 using SuperSimpleCookbook.Service.Common;
 
@@ -111,6 +112,23 @@ namespace SuperSimpleCookbook.Controllers
             }
 
             return NotFound();
+        }
+
+        [HttpGet]
+        [Route("paginate")]
+        public async Task<IActionResult> AllWithPaginationFilteringAndSorting(
+            [FromQuery] FilterForRecipe filter,
+            [FromQuery] Paging paging,
+            [FromQuery] SortOrder sort)
+        {
+            var response = await _service.GetRecipeWithFilterPagingAndSortAsync(filter, paging, sort);
+
+            if (response.Success == false) 
+            { 
+                return BadRequest(response.Message);
+            }
+
+            return Ok(response.Data);
         }
 
     }

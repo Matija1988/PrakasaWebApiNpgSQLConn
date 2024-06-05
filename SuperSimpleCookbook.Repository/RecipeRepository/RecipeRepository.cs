@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using Npgsql;
+using SuperSimpleCookbook.Common;
 using SuperSimpleCookbook.Model;
 using SuperSimpleCookbook.Model.Model;
 using SuperSimpleCookbook.Repository.Common.Interfaces;
@@ -109,7 +110,9 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             }
             if (listFromDB is null)
             {
-                return null;
+                response.Success = false;
+                response.Message = "No data in database";
+                return response;
             }
 
             _connection.Close();
@@ -120,10 +123,6 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
 
             return response;
         }
-
-
-
-
 
         public async Task <ServiceResponse<List<Recipe>>> GetNotActiveAsync()
         {
@@ -235,6 +234,126 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
                 return response;
             }
         }
+
+        public async Task<ServiceResponse<List<Recipe>>> 
+            GetRecipeWithFilterPagingAndSortAsync(FilterForRecipe filter, Paging paging, SortOrder sort)
+        {
+            var response = new ServiceResponse<List<Recipe>>();
+
+            StringBuilder query = ReturnConditionString(filter, paging, sort);
+
+            var listFromDB = new List<Recipe>();
+
+            var command = new NpgsqlCommand(query.ToString(), _connection);
+
+            SetFilterParams(command, filter, paging, sort);
+
+            _connection.Open();
+
+            var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                listFromDB.Add(new Recipe
+                {
+
+                    Id = reader.GetInt32(0),
+                    Title = reader.GetString(1),
+                    Subtitle = reader.GetString(2),
+                    Text = reader.GetString(3),
+                    IsActive = reader.GetBoolean(4),
+                    DateCreated = reader.GetDateTime(5),
+                    DateUpdated = reader.GetDateTime(6),
+
+                });
+            }
+
+            _connection.Close();
+            await reader.DisposeAsync();
+
+            if (listFromDB is not null)
+            {
+
+                response.Data = listFromDB;
+                response.Success = true;
+
+                return response;
+            }
+            else
+            {
+                response.Message = "No data in database";
+                response.Success = false;
+                return response;
+            }
+        }
+
+        private void SetFilterParams
+            (NpgsqlCommand command, FilterForRecipe filter, Paging paging, SortOrder sort)
+        {
+            if (!string.IsNullOrWhiteSpace(filter.Title))
+            {
+                command.Parameters.AddWithValue("@Title", "%" + filter.Title + "%");
+            }
+            if (!string.IsNullOrWhiteSpace(filter.Subtitle))
+            {
+                command.Parameters.AddWithValue("@Subtitle", "%" + filter.Subtitle + "%");
+            }
+            if (filter.DateCreated is not null)
+            {
+                command.Parameters.AddWithValue("@DateCreated", filter.DateCreated.Value.Date);
+            }
+            
+            if (!string.IsNullOrWhiteSpace(sort.OrderBy))
+            {
+                command.Parameters.AddWithValue("@OrderBy", sort.OrderBy);
+            }
+            if (!string.IsNullOrWhiteSpace(sort.OrderDirection))
+            {
+                command.Parameters.AddWithValue("@OrderDirection", sort.OrderDirection);
+            }
+
+            command.Parameters.AddWithValue("@PageSize", paging.PageSize);
+            command.Parameters.AddWithValue("@PageNumber", paging.PageNumber);
+
+        }
+
+        private StringBuilder ReturnConditionString(FilterForRecipe filter, Paging paging, SortOrder sort)
+        {
+            StringBuilder query = new StringBuilder("SELECT * FROM \"Recipe\" WHERE \"IsActive\" = true");
+
+
+            if (!string.IsNullOrWhiteSpace(filter.Title))
+            {
+                query.Append(" AND \"Title\" LIKE @Title");
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.Subtitle))
+            {
+                query.Append(" AND \"Subtitle\" LIKE @Subtitle");
+            }
+
+            if (filter.DateCreated is not null)
+            {
+                query.Append(" AND DATE(\"DateCreated\") = @DateCreated");
+            }
+
+            if (!string.IsNullOrEmpty(sort.OrderDirection) && !string.IsNullOrEmpty(sort.OrderBy))
+            {
+                query.Append($" ORDER BY \"{sort.OrderBy}\"  {sort.OrderDirection} ");
+
+            }
+
+            if (int.IsPositive(paging.PageSize) && paging.PageNumber > 0)
+            {
+                int page = (paging.PageNumber - 1) * paging.PageSize;
+
+                query.Append(" LIMIT @PageSize OFFSET " + page);
+
+            }
+
+            return query;
+        }
+
         private void AddParameters(NpgsqlCommand cmd, Recipe item)
         {
             cmd.Parameters.AddWithValue("@Title", item.Title);
@@ -245,6 +364,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             cmd.Parameters.AddWithValue("@DateUpdated", item.DateUpdated);
         }
 
+        
     }
 }
 

@@ -24,6 +24,6 @@ namespace SuperSimpleCookbook.Repository.Common.Interfaces
         Task <ServiceResponse<List<T2>>> GetRecepiesByAuthorGuidAsync(Guid uuid);
 
         Task<ServiceResponse<List<T>>> 
-            GetAuthorWithFilterPageingAndSort(FilterForAuthor filter, Paging paging, SortOrder sort);
+            GetAuthorWithFilterPagingAndSortAsync(FilterForAuthor filter, Paging paging, SortOrder sort);
     }
 }

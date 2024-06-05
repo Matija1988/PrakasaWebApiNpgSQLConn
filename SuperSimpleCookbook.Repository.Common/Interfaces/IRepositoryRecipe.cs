@@ -1,4 +1,5 @@
-﻿using SuperSimpleCookbook.Model.Model;
+﻿using SuperSimpleCookbook.Common;
+using SuperSimpleCookbook.Model.Model;
 
 namespace SuperSimpleCookbook.Repository.Common.Interfaces
 {
@@ -15,6 +16,8 @@ namespace SuperSimpleCookbook.Repository.Common.Interfaces
 
         Task<bool> DeleteAsync(int id);
 
+        Task<ServiceResponse<List<T>>>
+          GetRecipeWithFilterPagingAndSortAsync(FilterForRecipe filter, Paging paging, SortOrder sort);
 
     }
 }

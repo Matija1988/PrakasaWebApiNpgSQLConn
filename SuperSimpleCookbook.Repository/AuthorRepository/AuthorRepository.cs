@@ -294,7 +294,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
         }
 
         public async Task<ServiceResponse<List<Author>>>
-            GetAuthorWithFilterPageingAndSort(FilterForAuthor filter, Paging paging, SortOrder sort)
+            GetAuthorWithFilterPagingAndSortAsync(FilterForAuthor filter, Paging paging, SortOrder sort)
         {
             var response = new ServiceResponse<List<Author>>();
 
@@ -419,9 +419,6 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
             command.Parameters.AddWithValue("@PageSize", paging.PageSize);
             command.Parameters.AddWithValue("@PageNumber", paging.PageNumber);
-
-
-
 
         }
         private void AddParameters(NpgsqlCommand command, Author author)

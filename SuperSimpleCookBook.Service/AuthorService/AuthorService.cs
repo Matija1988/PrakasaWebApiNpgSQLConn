@@ -102,10 +102,10 @@ namespace SuperSimpleCookbook.Service.AuthorService
 
         }
 
-        public async Task<ServiceResponse<List<Author>>> GetAuthorWithFilterPageingAndSort
+        public async Task<ServiceResponse<List<Author>>> GetAuthorWithFilterPagingAndSortAsync
             (FilterForAuthor filter, Paging paging, SortOrder sort)
         {   
-         var response = await _repository.GetAuthorWithFilterPageingAndSort(filter, paging, sort);
+         var response = await _repository.GetAuthorWithFilterPagingAndSortAsync(filter, paging, sort);
 
             if(response.Success == false)
             {

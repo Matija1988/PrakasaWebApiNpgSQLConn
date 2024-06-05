@@ -1,4 +1,5 @@
-﻿using SuperSimpleCookbook.Model;
+﻿using SuperSimpleCookbook.Common;
+using SuperSimpleCookbook.Model;
 using SuperSimpleCookbook.Model.Model;
 using SuperSimpleCookbook.Repository.Common.Interfaces;
 using SuperSimpleCookbook.Service.Common;
@@ -69,6 +70,20 @@ namespace SuperSimpleCookbook.Service.RecipeService
             if (response.Success == false) 
             {
                 return response;
+            }
+
+            return response;
+        }
+
+        public async Task<ServiceResponse<List<Recipe>>> 
+            GetRecipeWithFilterPagingAndSortAsync(FilterForRecipe filter, Paging paging, SortOrder sort)
+        {
+            var response = await _repository.GetRecipeWithFilterPagingAndSortAsync(filter, paging, sort);
+
+            if(response.Success == false)
+            {
+                return response;
+
             }
 
             return response;

@@ -31,7 +31,7 @@ namespace SuperSimpleCookbook.Controllers
             [FromQuery]Paging paging, 
             [FromQuery]SortOrder sort)
         {
-            var response =  await _service.GetAuthorWithFilterPageingAndSort(filter, paging, sort);
+            var response =  await _service.GetAuthorWithFilterPagingAndSortAsync(filter, paging, sort);
 
             if(response.Success == false)
             {
