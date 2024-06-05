@@ -8,7 +8,7 @@ namespace SuperSimpleCookbook.Common
 {
     public class SortOrder
     {
-        public string OrderBy { get; set; } = "DateCreated";
-        public string OrderDirection { get; set; } = "asc";
+        public string? OrderBy { get; set; } 
+        public string? OrderDirection { get; set; }
     }
 }

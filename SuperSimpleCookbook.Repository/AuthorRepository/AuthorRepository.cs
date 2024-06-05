@@ -293,17 +293,20 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             }
         }
 
-        public async Task<ServiceResponse<List<Author>>> GetAuthorWithFilterPageingAndSort(FilterForAuthor filter, Paging paging, SortOrder sort)
+        public async Task<ServiceResponse<List<Author>>> 
+            GetAuthorWithFilterPageingAndSort(FilterForAuthor filter, Paging paging, SortOrder sort)
         {
             var response = new ServiceResponse<List<Author>>();
 
-            StringBuilder query = ReturnConditionString(filter);
+            StringBuilder query = ReturnConditionString(filter, paging, sort);
 
             var listFromDB = new List<Author>();
 
             var command = new NpgsqlCommand(query.ToString(), _connection);
 
-            SetFilterParams(command, filter);
+            SetFilterParams(command, filter, paging, sort);
+
+
 
             _connection.Open();
 
@@ -346,7 +349,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             }
         }
 
-        private StringBuilder ReturnConditionString(FilterForAuthor filter)
+        private StringBuilder ReturnConditionString(FilterForAuthor filter, Paging paging, SortOrder sort)
         {
             StringBuilder query = new StringBuilder("SELECT * FROM \"Author\" WHERE \"IsActive\" = true");
 
@@ -371,11 +374,26 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 query.Append(" AND DATE(\"DateCreated\") = @DateCreated");
             }
 
+            if((paging.PageSize  < 1 && paging.PageFirstIndex <1 && paging.PageNumber < 1))
+            {
+                
+                paging.PageNumber = 1;
+                paging.PageFirstIndex = 1;
+                int firstIndex = paging.PageFirstIndex = 1;
+                paging.PageSize = (3 * firstIndex);
+
+                query.Append(" AND \"Id\" >= " + firstIndex + 
+                    " ORDER BY \"DateCreated\" LIMIT " + paging.PageSize + " ");
+
+
+            }
+
 
             return query;
         }
 
-        private void SetFilterParams(NpgsqlCommand command, FilterForAuthor filter)
+        private void SetFilterParams
+            (NpgsqlCommand command, FilterForAuthor filter, Paging paging, SortOrder sort)
         {
             if (!string.IsNullOrWhiteSpace(filter.FirstName))
             {
@@ -393,6 +411,19 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             {
                 command.Parameters.AddWithValue("@DateCreated", filter.DateCreated.Value.Date);
             }
+            if (paging.PageSize <= 0)
+            {
+                command.Parameters.AddWithValue("@PageSize", paging.PageSize);
+            }
+            if (paging.PageFirstIndex > 0)
+            {
+                command.Parameters.AddWithValue("@PageFirstIndex", paging.PageFirstIndex);
+            }
+            if (paging.PageNumber > 0)
+            {
+                command.Parameters.AddWithValue("@PageNumber", paging.PageNumber);
+            }
+
         }
         private void AddParameters(NpgsqlCommand command, Author author)
         {
