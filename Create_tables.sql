@@ -44,6 +44,20 @@ alter table "Author" alter column "DateUpdated" type timestamp;
 alter table "Recipe" alter column "DateCreated" type timestamp;
 alter table "Recipe" alter column "DateUpdated" type timestamp;
 
+select * from "Author";
+
+Select * from "Author" where "FirstName" Like '%Te%';
+
+Select * from "Author" where TO_CHAR("DateOfBirth", 'YYYY-MM-DD HH24:MI:SS') Like '%1982%';
+
+Select * from "Author" where "FirstName" Like '%Ma%' and DATE("DateOfBirth") = '1982-06-13';
+
+select * from "Author" where "IsActive" = true and "FirstName" like '%Mar%'
+
+select * from "Author" where "IsActive" = true order by "FirstName" ASC Limit 3 OFFSET 0;
+
+select * from "Author" where "IsActive" = true and "Id">= 1 order by "DateCreated" ASC limit 3;
+
 
 alter table "AuthorRecipe" add constraint "Fk_AuthorRecipe_Author_AuthorId" foreign key ("AuthorId") references "Author" ("Id");
 
