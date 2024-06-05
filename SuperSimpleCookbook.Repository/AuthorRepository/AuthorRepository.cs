@@ -293,7 +293,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             }
         }
 
-        public async Task<ServiceResponse<List<Author>>> 
+        public async Task<ServiceResponse<List<Author>>>
             GetAuthorWithFilterPageingAndSort(FilterForAuthor filter, Paging paging, SortOrder sort)
         {
             var response = new ServiceResponse<List<Author>>();
@@ -306,32 +306,30 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
             SetFilterParams(command, filter, paging, sort);
 
-
-
             _connection.Open();
 
-                var reader = await command.ExecuteReaderAsync();
+            var reader = await command.ExecuteReaderAsync();
 
-                while (await reader.ReadAsync())
+            while (await reader.ReadAsync())
+            {
+                listFromDB.Add(new Author
                 {
-                    listFromDB.Add(new Author
-                    {
 
-                        Id = reader.GetInt32(0),
-                        Uuid = reader.GetGuid(1),
-                        FirstName = reader.GetString(2),
-                        LastName = reader.GetString(3),
-                        DateOfBirth = reader.GetDateTime(4),
-                        Bio = reader.GetString(5),
-                        IsActive = reader.GetBoolean(6),
-                        DateCreated = reader.GetDateTime(7),
-                        DateUpdated = reader.GetDateTime(8),
+                    Id = reader.GetInt32(0),
+                    Uuid = reader.GetGuid(1),
+                    FirstName = reader.GetString(2),
+                    LastName = reader.GetString(3),
+                    DateOfBirth = reader.GetDateTime(4),
+                    Bio = reader.GetString(5),
+                    IsActive = reader.GetBoolean(6),
+                    DateCreated = reader.GetDateTime(7),
+                    DateUpdated = reader.GetDateTime(8),
 
-                    });
-                }
+                });
+            }
 
-                _connection.Close();
-                await reader.DisposeAsync();
+            _connection.Close();
+            await reader.DisposeAsync();
 
             if (listFromDB is not null)
             {
@@ -374,17 +372,17 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 query.Append(" AND DATE(\"DateCreated\") = @DateCreated");
             }
 
-            if(!string.IsNullOrEmpty(sort.OrderDirection) && !string.IsNullOrEmpty(sort.OrderBy))
+            if (!string.IsNullOrEmpty(sort.OrderDirection) && !string.IsNullOrEmpty(sort.OrderBy))
             {
-                query.Append(" ORDER BY  @OrderBy " +  sort.OrderDirection);
+                query.Append($" ORDER BY \"{sort.OrderBy}\"  {sort.OrderDirection} ");
 
             }
 
-            if(int.IsPositive(paging.PageSize) && paging.PageNumber > 0)
+            if (int.IsPositive(paging.PageSize) && paging.PageNumber > 0)
             {
                 int page = (paging.PageNumber - 1) * paging.PageSize;
-          
-                query.Append(" LIMIT @PageSize OFFSET " + page );
+
+                query.Append(" LIMIT @PageSize OFFSET " + page);
 
             }
 
@@ -410,12 +408,17 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             {
                 command.Parameters.AddWithValue("@DateCreated", filter.DateCreated.Value.Date);
             }
-            if(!string.IsNullOrWhiteSpace(sort.OrderBy))
+            if (!string.IsNullOrWhiteSpace(sort.OrderBy))
             {
-                command.Parameters.AddWithValue(@"OrderBy", sort.OrderBy);
+                command.Parameters.AddWithValue("@OrderBy", sort.OrderBy);
             }
-                command.Parameters.AddWithValue(@"PageSize", paging.PageSize);
-            command.Parameters.AddWithValue(@"PageNumber", paging.PageNumber);
+            if (!string.IsNullOrWhiteSpace(sort.OrderDirection))
+            {
+                command.Parameters.AddWithValue("@OrderDirection", sort.OrderDirection);
+            }
+
+            command.Parameters.AddWithValue("@PageSize", paging.PageSize);
+            command.Parameters.AddWithValue("@PageNumber", paging.PageNumber);
 
 
 
