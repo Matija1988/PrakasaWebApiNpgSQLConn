@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
@@ -9,9 +10,11 @@ namespace SuperSimpleCookbook.Common
 {
     public class Paging
     {
-        public int PageSize { get; set; } = 10;
 
-        public int PageFirstIndex { get; set; }
-        public int PageNumber { get; set; } = 1;
+        [Range(1, int.MaxValue, ErrorMessage = "Please enter valid integer value: 1 or above ")]
+        public int PageSize { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage ="Please enter valid integer value: 1 or above ")]
+        public int PageNumber { get; set; }
     }
 }

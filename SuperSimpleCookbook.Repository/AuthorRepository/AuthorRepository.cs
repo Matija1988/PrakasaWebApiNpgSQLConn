@@ -374,20 +374,19 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 query.Append(" AND DATE(\"DateCreated\") = @DateCreated");
             }
 
-            if((paging.PageSize  < 1 && paging.PageFirstIndex <1 && paging.PageNumber < 1))
+            if(!string.IsNullOrEmpty(sort.OrderDirection) && !string.IsNullOrEmpty(sort.OrderBy))
             {
-                
-                paging.PageNumber = 1;
-                paging.PageFirstIndex = 1;
-                int firstIndex = paging.PageFirstIndex = 1;
-                paging.PageSize = (3 * firstIndex);
-
-                query.Append(" AND \"Id\" >= " + firstIndex + 
-                    " ORDER BY \"DateCreated\" LIMIT " + paging.PageSize + " ");
-
+                query.Append(" ORDER BY  @OrderBy " +  sort.OrderDirection);
 
             }
 
+            if(int.IsPositive(paging.PageSize) && paging.PageNumber > 0)
+            {
+                int page = (paging.PageNumber - 1) * paging.PageSize;
+          
+                query.Append(" LIMIT @PageSize OFFSET " + page );
+
+            }
 
             return query;
         }
@@ -411,18 +410,15 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             {
                 command.Parameters.AddWithValue("@DateCreated", filter.DateCreated.Value.Date);
             }
-            if (paging.PageSize <= 0)
+            if(!string.IsNullOrWhiteSpace(sort.OrderBy))
             {
-                command.Parameters.AddWithValue("@PageSize", paging.PageSize);
+                command.Parameters.AddWithValue(@"OrderBy", sort.OrderBy);
             }
-            if (paging.PageFirstIndex > 0)
-            {
-                command.Parameters.AddWithValue("@PageFirstIndex", paging.PageFirstIndex);
-            }
-            if (paging.PageNumber > 0)
-            {
-                command.Parameters.AddWithValue("@PageNumber", paging.PageNumber);
-            }
+                command.Parameters.AddWithValue(@"PageSize", paging.PageSize);
+            command.Parameters.AddWithValue(@"PageNumber", paging.PageNumber);
+
+
+
 
         }
         private void AddParameters(NpgsqlCommand command, Author author)
