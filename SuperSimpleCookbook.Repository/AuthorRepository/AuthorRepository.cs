@@ -328,6 +328,11 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 query.Append(" AND DATE(\"DateOfBirth\") = @DateOfBirth");
             }
 
+            if (filter.DateCreated is not null)
+            {
+                query.Append(" AND DATE(\"DateCreated\") = @DateCreated");
+            }
+
             var command = new NpgsqlCommand(query.ToString(), _connection);
 
             if (!string.IsNullOrWhiteSpace(filter.FirstName))
@@ -341,6 +346,10 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             if (filter.DateOfBirth is not null)
             {
                 command.Parameters.AddWithValue("@DateOfBirth", filter.DateOfBirth.Value.Date);
+            }
+            if (filter.DateCreated is not null)
+            {
+                command.Parameters.AddWithValue("@DateCreated", filter.DateCreated.Value.Date);
             }
 
 
