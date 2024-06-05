@@ -4,6 +4,7 @@ using SuperSimpleCookbook.Model;
 using SuperSimpleCookbook.Model.Model;
 using SuperSimpleCookbook.Repository.Common.Interfaces;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
@@ -309,29 +310,9 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
         {
             var response = new ServiceResponse<List<Author>>();
 
-            StringBuilder query = new StringBuilder("SELECT * FROM \"Author\" WHERE \"IsActive\" = true");
+            StringBuilder query = ReturnConditionString(filter);
 
             var listFromDB = new List<Author>();
-
-            if (!string.IsNullOrWhiteSpace(filter.FirstName))
-            {
-                query.Append(" AND \"FirstName\" LIKE @FirstName");
-            }
-
-            if (!string.IsNullOrWhiteSpace(filter.LastName))
-            {
-                query.Append(" AND \"LastName\" LIKE @LastName");
-            }
-
-            if (filter.DateOfBirth is not null)
-            {
-                query.Append(" AND DATE(\"DateOfBirth\") = @DateOfBirth");
-            }
-
-            if (filter.DateCreated is not null)
-            {
-                query.Append(" AND DATE(\"DateCreated\") = @DateCreated");
-            }
 
             var command = new NpgsqlCommand(query.ToString(), _connection);
 
@@ -396,11 +377,31 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
         private StringBuilder ReturnConditionString(FilterForAuthor filter)
         {
-            StringBuilder condition = new StringBuilder("SELECT * FROM \"Author\"");
+            StringBuilder query = new StringBuilder("SELECT * FROM \"Author\" WHERE \"IsActive\" = true");
 
 
+            if (!string.IsNullOrWhiteSpace(filter.FirstName))
+            {
+                query.Append(" AND \"FirstName\" LIKE @FirstName");
+            }
 
-            return condition;
+            if (!string.IsNullOrWhiteSpace(filter.LastName))
+            {
+                query.Append(" AND \"LastName\" LIKE @LastName");
+            }
+
+            if (filter.DateOfBirth is not null)
+            {
+                query.Append(" AND DATE(\"DateOfBirth\") = @DateOfBirth");
+            }
+
+            if (filter.DateCreated is not null)
+            {
+                query.Append(" AND DATE(\"DateCreated\") = @DateCreated");
+            }
+
+
+            return query;
         }
       
     }
