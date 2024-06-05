@@ -5,6 +5,7 @@ using SuperSimpleCookbook.Repository.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -21,17 +22,18 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
         {
             _connection = new NpgsqlConnection("Host=localhost;Port=5432; User Id=postgres; Password=root;Database=Kuharica;");
         }
-        public async Task<bool> Delete(Guid uuid)
+        public async Task<bool> DeleteAsync(Guid uuid)
         {
             try
             {
+                
                 const string commandText = "DELETE FROM \"Author\" WHERE \"Uuid\" = @uuid";
                 using var cmd = _connection.CreateCommand();
                 cmd.CommandText = commandText;
                 cmd.Parameters.AddWithValue("@Uuid", uuid);
-                await _connection.OpenAsync();
+                _connection.Open();
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
-                await _connection.CloseAsync();
+                _connection.Close();
                 return rowAffected > 0;
             }
             catch (Exception ex)
@@ -40,7 +42,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             }
         }
 
-        public async Task <ServiceResponse<Author>> Get(Guid uuid)
+        public async Task <ServiceResponse<Author>> GetAsync(Guid uuid)
         {
             var response = new ServiceResponse<Author>();   
 
@@ -50,7 +52,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
             command.Parameters.AddWithValue("@Uuid", NpgsqlTypes.NpgsqlDbType.Uuid, uuid);
 
-            await _connection.OpenAsync();
+            _connection.Open();
 
             using (var reader = await command.ExecuteReaderAsync())
             {
@@ -64,7 +66,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
                     };
 
-                    await _connection.CloseAsync();
+                    _connection.Close();
                     await _connection.DisposeAsync();
                     
                     response.Success = true;
@@ -81,7 +83,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             }
         }
 
-        public async Task <ServiceResponse<List<Author>>> GetAll()
+        public async Task <ServiceResponse<List<Author>>> GetAllAsync()
         {
             var response = new ServiceResponse<List<Author>>();
             try
@@ -90,7 +92,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 var listFromDB = new List<Author>();
                 var command = new NpgsqlCommand(commandText, _connection);
 
-                await _connection.OpenAsync();
+                _connection.Open();
 
                 var reader = await command.ExecuteReaderAsync();
 
@@ -112,7 +114,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                     });
                 }
 
-                await _connection.CloseAsync();
+                _connection.Close();
                 await reader.DisposeAsync();
 
                 response.Data = listFromDB;
@@ -129,7 +131,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
         }
 
-        public async Task <ServiceResponse<List<Author>>> GetNotActive()
+        public async Task <ServiceResponse<List<Author>>> GetNotActiveAsync()
         {
             var response = new ServiceResponse<List<Author>>();
 
@@ -137,7 +139,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             var listFromDB = new List<Author>();
             var command = new NpgsqlCommand(commandText, _connection);
 
-            await _connection.OpenAsync();
+            _connection.Open();
 
             var reader = await command.ExecuteReaderAsync();
 
@@ -167,7 +169,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 return response;
             }
 
-            await _connection.CloseAsync();
+            _connection.Close();
             await reader.DisposeAsync();
 
             response.Data = listFromDB;
@@ -176,7 +178,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             return response;
         }
 
-        public async Task <ServiceResponse<List<AuthorRecipe>>> GetRecepiesByAuthorGuid(Guid uuid)
+        public async Task <ServiceResponse<List<AuthorRecipe>>> GetRecepiesByAuthorGuidAsync(Guid uuid)
         {
             var response = new ServiceResponse<List<AuthorRecipe>>();
 
@@ -190,7 +192,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             var command = new NpgsqlCommand(commandText, _connection);
 
             command.Parameters.AddWithValue("@Uuid", NpgsqlTypes.NpgsqlDbType.Uuid, uuid);
-            await _connection.OpenAsync();
+            _connection.Open();
 
             var reader = await command.ExecuteReaderAsync();
 
@@ -211,7 +213,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 return response;
             }
 
-            await _connection.CloseAsync();
+             _connection.Close();
             await reader.DisposeAsync();
 
             response.Data = listFromDB;
@@ -220,7 +222,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             return response;
         }
 
-        public async Task <ServiceResponse<Author>> Post(Author item)
+        public async Task <ServiceResponse<Author>> PostAsync(Author item)
         {
             var response = new ServiceResponse<Author>();
 
@@ -238,9 +240,9 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 cmd.Parameters.AddWithValue("@Uuid", item.Uuid = guid);
 
                 AddParameters(cmd, item);
-                await _connection.OpenAsync();
+                 _connection.Open();
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
-                await _connection.CloseAsync();
+                 _connection.Close();
                 await _connection.DisposeAsync();
 
                 response.Data = item;
@@ -255,7 +257,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             }
         }
 
-        public async Task <ServiceResponse<Author>> Put(Author item, Guid uuid)
+        public async Task <ServiceResponse<Author>> PutAsync(Author item, Guid uuid)
         {
             var response = new ServiceResponse<Author>();
             try
@@ -269,11 +271,11 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 AddParameters(cmd, item);
 
                 cmd.Parameters.AddWithValue("@Uuid", uuid);
-               // cmd.Parameters.AddWithValue("@Id", item.Id);
+             
 
-                await _connection.OpenAsync();
+                _connection.Open();
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
-                await _connection.CloseAsync();
+                 _connection.Close();
                 await _connection.DisposeAsync();
 
                 response.Success = true;

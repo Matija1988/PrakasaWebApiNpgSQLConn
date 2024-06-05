@@ -9,17 +9,17 @@ namespace SuperSimpleCookbook.Repository.Common.Interfaces
 {
     public interface IRepositoryAuthor<T , T2> where T : class
     {
-        Task <ServiceResponse<List<T>>> GetAll();
-        Task <ServiceResponse<T>> Get(Guid uuid);
+        Task <ServiceResponse<List<T>>> GetAllAsync();
+        Task <ServiceResponse<T>> GetAsync(Guid uuid);
 
-         Task <ServiceResponse<List<T>>> GetNotActive();
+         Task <ServiceResponse<List<T>>> GetNotActiveAsync();
 
-        Task <ServiceResponse<T>> Post(T item);
+        Task <ServiceResponse<T>> PostAsync(T item);
 
-        Task <ServiceResponse<T>> Put(T item, Guid uuid);
+        Task <ServiceResponse<T>> PutAsync(T item, Guid uuid);
 
-        Task<bool> Delete(Guid uuid);
+        Task<bool> DeleteAsync(Guid uuid);
 
-        Task <ServiceResponse<List<T2>>> GetRecepiesByAuthorGuid(Guid uuid);
+        Task <ServiceResponse<List<T2>>> GetRecepiesByAuthorGuidAsync(Guid uuid);
     }
 }

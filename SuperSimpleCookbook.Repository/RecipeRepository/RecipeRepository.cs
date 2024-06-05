@@ -20,7 +20,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             _connection = new NpgsqlConnection("Host=localhost;Port=5432; User Id=postgres; Password=root;Database=Kuharica;");
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             try
             {
@@ -28,9 +28,9 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
                 using var cmd = _connection.CreateCommand();
                 cmd.CommandText = commandText;
                 cmd.Parameters.AddWithValue("@Id", id);
-                await _connection.OpenAsync();
+                _connection.Open();
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
-                await _connection.CloseAsync();
+                _connection.Close();
                 return rowAffected > 0;
             }
             catch (Exception ex)
@@ -39,7 +39,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             }
         }
 
-        public async Task <ServiceResponse<Recipe>> Get(int id)
+        public async Task <ServiceResponse<Recipe>> GetAsync(int id)
         {
             var response = new ServiceResponse<Recipe>();
 
@@ -49,7 +49,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
 
             command.Parameters.AddWithValue("@Id", id);
 
-            await _connection.OpenAsync();
+            _connection.Open();
 
             using (var reader = await command.ExecuteReaderAsync())
             {
@@ -63,7 +63,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
 
                     };
 
-                    await _connection.CloseAsync();
+                    _connection.Close();
                     await _connection.DisposeAsync();
 
                     response.Success = true;
@@ -80,7 +80,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             }
         }
 
-        public async Task <ServiceResponse<List<Recipe>>> GetAll()
+        public async Task <ServiceResponse<List<Recipe>>> GetAllAsync()
         {
             var response = new ServiceResponse<List<Recipe>>();
 
@@ -125,7 +125,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
 
 
 
-        public async Task <ServiceResponse<List<Recipe>>> GetNotActive()
+        public async Task <ServiceResponse<List<Recipe>>> GetNotActiveAsync()
         {
             var response = new ServiceResponse <List<Recipe>>();
 
@@ -134,7 +134,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             var listFromDB = new List<Recipe>();
             var command = new NpgsqlCommand(commandText, _connection);
 
-            await _connection.OpenAsync();
+            _connection.Open();
 
             var reader = await command.ExecuteReaderAsync();
 
@@ -161,7 +161,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
                 return response;
             }
 
-            await _connection.CloseAsync();
+            _connection.Close();
             await reader.DisposeAsync();
 
             response.Data = listFromDB;
@@ -170,7 +170,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             return response;
         }
 
-        public async Task <ServiceResponse<Recipe>> Post(Recipe item)
+        public async Task <ServiceResponse<Recipe>> PostAsync(Recipe item)
         {
             var response = new ServiceResponse<Recipe>();
             try
@@ -183,9 +183,9 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
                 cmd.CommandText = commandText;
 
                 AddParameters(cmd, item);
-                await _connection.OpenAsync();
+                _connection.Open();
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
-                await _connection.CloseAsync();
+                _connection.Close();
                 await _connection.DisposeAsync();
 
                 response.Success = true;
@@ -201,7 +201,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             }
         }
 
-        public async Task<ServiceResponse<Recipe>> Put(Recipe item, int id)
+        public async Task<ServiceResponse<Recipe>> PutAsync(Recipe item, int id)
         {
             var response = new ServiceResponse<Recipe>();
 
@@ -219,9 +219,9 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
 
                 cmd.Parameters.AddWithValue("@Id", item.Id);
 
-                await _connection.OpenAsync();
+                _connection.Open();
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
-                await _connection.CloseAsync();
+                _connection.Close();
                 await _connection.DisposeAsync();
 
                 response.Success = true;
