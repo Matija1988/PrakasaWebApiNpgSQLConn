@@ -4,16 +4,16 @@ namespace SuperSimpleCookbook.Service.Common
 {
     public interface IRecipeService<T> where T : class
     {
-         Task <ServiceResponse<List<T>>> GetAll();
+         Task <ServiceResponse<List<T>>> GetAllAsync();
 
-        Task <ServiceResponse<T>> GetById(int id);
+        Task <ServiceResponse<T>> GetByIdAsync(int id);
 
-        Task <ServiceResponse<List<T>>> GetNotActive();
+        Task <ServiceResponse<List<T>>> GetNotActiveAsync();
 
-        Task <ServiceResponse<T>> Create(T entity);
+        Task <ServiceResponse<T>> CreateAsync(T entity);
 
-        Task <ServiceResponse<T>> Update(T entity, int id);
+        Task <ServiceResponse<T>> UpdateAsync(T entity, int id);
 
-        Task<bool> Delete(int id);
+        Task<bool> DeleteAsync(int id);
     }
 }

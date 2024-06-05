@@ -7,6 +7,8 @@ using System.Data;
 using SuperSimpleCookbook.Model;
 using SuperSimpleCookbook.Service.Common;
 using SuperSimpleCookbook.Model.Model;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
+using SuperSimpleCookbook.Common; 
 
 namespace SuperSimpleCookbook.Controllers
 {
@@ -23,9 +25,27 @@ namespace SuperSimpleCookbook.Controllers
         }
 
         [HttpGet]
+        [Route("paginate")]
+        public async Task<IActionResult> GetAllWithPaginationFilteringAndSorting(
+            [FromQuery]FilterForAuthor filter, 
+            [FromQuery]Paging paging, 
+            [FromQuery]SortOrder sort)
+        {
+            var response =  await _service.GetAuthorWithFilterPageingAndSort(filter, paging, sort);
+
+            if(response.Success == false)
+            {
+                return BadRequest(response.Message);
+            }
+
+            return Ok(response.Data);
+
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var response = await _service.GetAll();
+            var response = await _service.GetAllAsync();
 
             if (response.Success == false) 
             {
@@ -39,7 +59,7 @@ namespace SuperSimpleCookbook.Controllers
         [Route("NotActive")]
         public async Task<IActionResult> GetAllNotActive()
         {
-            var response = await _service.GetNotActive();
+            var response = await _service.GetNotActiveAsync();
 
             if (response.Success == false)
             {
@@ -53,7 +73,7 @@ namespace SuperSimpleCookbook.Controllers
         [Route("{uuid:guid}")]
         public async Task<IActionResult> GetByGuid(Guid Uuid)
         {
-            var response = await _service.GetByGuid(Uuid);
+            var response = await _service.GetByGuidAsync(Uuid);
 
             if (response.Success == false)
             {
@@ -74,7 +94,7 @@ namespace SuperSimpleCookbook.Controllers
                 return BadRequest();
             }
 
-            var response = await _service.Create(author);
+            var response = await _service.CreateAsync(author);
 
             if (response.Success == false)
             {
@@ -93,7 +113,7 @@ namespace SuperSimpleCookbook.Controllers
             {
                 return BadRequest();
             }
-            var response = await _service.Update(author, uuid);
+            var response = await _service.UpdateAsync(author, uuid);
 
             if (response.Success == false)
             {
@@ -108,7 +128,7 @@ namespace SuperSimpleCookbook.Controllers
         [Route("DeleteAuthor/{uuid:Guid}")]
         public async Task<IActionResult> Delete(Guid uuid)
         {
-           var response = await _service.Delete(uuid);
+           var response = await _service.DeleteAsync(uuid);
 
             if(response)
             {
@@ -122,7 +142,7 @@ namespace SuperSimpleCookbook.Controllers
 
         public async Task<IActionResult> GetAuthorRecipe(Guid uuid)
         {
-            var response = await _service.GetRecepiesByAuthorGuid(uuid);
+            var response = await _service.GetRecepiesByAuthorGuidAsync(uuid);
 
             if(response.Success == false)
             {

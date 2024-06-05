@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SuperSimpleCookbook.Common\SuperSimpleCookbook.Common.csproj" />
     <ProjectReference Include="..\SuperSimpleCookbook.Model\SuperSimpleCookbook.Model.csproj" />
   </ItemGroup>
 

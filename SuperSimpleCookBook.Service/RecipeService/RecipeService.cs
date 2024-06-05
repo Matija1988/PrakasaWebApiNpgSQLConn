@@ -20,9 +20,9 @@ namespace SuperSimpleCookbook.Service.RecipeService
             _repository = repository;
         }
 
-        public async Task <ServiceResponse<Recipe>> Create(Recipe entity)
+        public async Task <ServiceResponse<Recipe>> CreateAsync(Recipe entity)
         {
-            var response = await _repository.Post(entity);
+            var response = await _repository.PostAsync(entity);
 
             if (response.Success == false) 
             {
@@ -32,14 +32,14 @@ namespace SuperSimpleCookbook.Service.RecipeService
             return response;
         }
 
-        public Task<bool> Delete(int id)
+        public Task<bool> DeleteAsync(int id)
         {
-            return _repository.Delete(id);
+            return _repository.DeleteAsync(id);
         }
 
-        public async Task<ServiceResponse<List<Recipe>>> GetAll()
+        public async Task<ServiceResponse<List<Recipe>>> GetAllAsync()
         {
-            var response = await _repository.GetAll();
+            var response = await _repository.GetAllAsync();
 
             if (response.Success == false)
             {
@@ -50,9 +50,9 @@ namespace SuperSimpleCookbook.Service.RecipeService
             return response;
         }
 
-        public async Task<ServiceResponse<Recipe>> GetById(int id)
+        public async Task<ServiceResponse<Recipe>> GetByIdAsync(int id)
         {
-            var response = await _repository.Get(id);
+            var response = await _repository.GetAsync(id);
 
             if (response.Success == false)
             {
@@ -62,9 +62,9 @@ namespace SuperSimpleCookbook.Service.RecipeService
             return response;
         }
 
-        public async Task <ServiceResponse<List<Recipe>>> GetNotActive()
+        public async Task <ServiceResponse<List<Recipe>>> GetNotActiveAsync()
         {
-            var response = await _repository.GetNotActive();
+            var response = await _repository.GetNotActiveAsync();
 
             if (response.Success == false) 
             {
@@ -74,9 +74,9 @@ namespace SuperSimpleCookbook.Service.RecipeService
             return response;
         }
 
-        public async Task <ServiceResponse<Recipe>> Update(Recipe entity, int id)
+        public async Task <ServiceResponse<Recipe>> UpdateAsync(Recipe entity, int id)
         {
-            var response = await _repository.Put(entity, id);
+            var response = await _repository.PutAsync(entity, id);
 
             if (response.Success == false)
             {

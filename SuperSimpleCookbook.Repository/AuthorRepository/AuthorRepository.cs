@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using SuperSimpleCookbook.Common;
 using SuperSimpleCookbook.Model;
 using SuperSimpleCookbook.Model.Model;
 using SuperSimpleCookbook.Repository.Common.Interfaces;
@@ -16,7 +17,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 {
     public class AuthorRepository : IRepositoryAuthor<Author, AuthorRecipe>
     {
-       
+
         private readonly NpgsqlConnection _connection;
         public AuthorRepository()
         {
@@ -26,7 +27,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
         {
             try
             {
-                
+
                 const string commandText = "DELETE FROM \"Author\" WHERE \"Uuid\" = @uuid";
                 using var cmd = _connection.CreateCommand();
                 cmd.CommandText = commandText;
@@ -42,9 +43,9 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             }
         }
 
-        public async Task <ServiceResponse<Author>> GetAsync(Guid uuid)
+        public async Task<ServiceResponse<Author>> GetAsync(Guid uuid)
         {
-            var response = new ServiceResponse<Author>();   
+            var response = new ServiceResponse<Author>();
 
             string commandText = "SELECT \"FirstName\", \"LastName\"  FROM \"Author\" WHERE \"Uuid\" = @uuid;";
 
@@ -60,7 +61,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 {
                     response.Data = new Author
                     {
-                        
+
                         FirstName = reader.GetString(0),
                         LastName = reader.GetString(1),
 
@@ -68,7 +69,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
                     _connection.Close();
                     await _connection.DisposeAsync();
-                    
+
                     response.Success = true;
 
                     return response;
@@ -83,7 +84,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             }
         }
 
-        public async Task <ServiceResponse<List<Author>>> GetAllAsync()
+        public async Task<ServiceResponse<List<Author>>> GetAllAsync()
         {
             var response = new ServiceResponse<List<Author>>();
             try
@@ -122,7 +123,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
                 return response;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 response.Success = false;
                 response.Message = "No data found in database";
@@ -131,7 +132,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
         }
 
-        public async Task <ServiceResponse<List<Author>>> GetNotActiveAsync()
+        public async Task<ServiceResponse<List<Author>>> GetNotActiveAsync()
         {
             var response = new ServiceResponse<List<Author>>();
 
@@ -161,9 +162,9 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
                 });
             }
-            if(listFromDB is null)
+            if (listFromDB is null)
             {
-                response.Success =false;
+                response.Success = false;
                 response.Message = "No data in database";
 
                 return response;
@@ -178,7 +179,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             return response;
         }
 
-        public async Task <ServiceResponse<List<AuthorRecipe>>> GetRecepiesByAuthorGuidAsync(Guid uuid)
+        public async Task<ServiceResponse<List<AuthorRecipe>>> GetRecepiesByAuthorGuidAsync(Guid uuid)
         {
             var response = new ServiceResponse<List<AuthorRecipe>>();
 
@@ -213,7 +214,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 return response;
             }
 
-             _connection.Close();
+            _connection.Close();
             await reader.DisposeAsync();
 
             response.Data = listFromDB;
@@ -222,7 +223,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             return response;
         }
 
-        public async Task <ServiceResponse<Author>> PostAsync(Author item)
+        public async Task<ServiceResponse<Author>> PostAsync(Author item)
         {
             var response = new ServiceResponse<Author>();
 
@@ -234,15 +235,15 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
                 using var cmd = _connection.CreateCommand();
                 cmd.CommandText = commandText;
-               
+
                 Guid guid = Guid.NewGuid();
 
                 cmd.Parameters.AddWithValue("@Uuid", item.Uuid = guid);
 
                 AddParameters(cmd, item);
-                 _connection.Open();
+                _connection.Open();
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
-                 _connection.Close();
+                _connection.Close();
                 await _connection.DisposeAsync();
 
                 response.Data = item;
@@ -252,12 +253,12 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Unexpected error at author repository post method! " + ex.Message; 
+                response.Message = "Unexpected error at author repository post method! " + ex.Message;
                 return response;
             }
         }
 
-        public async Task <ServiceResponse<Author>> PutAsync(Author item, Guid uuid)
+        public async Task<ServiceResponse<Author>> PutAsync(Author item, Guid uuid)
         {
             var response = new ServiceResponse<Author>();
             try
@@ -271,11 +272,11 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 AddParameters(cmd, item);
 
                 cmd.Parameters.AddWithValue("@Uuid", uuid);
-             
+
 
                 _connection.Open();
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
-                 _connection.Close();
+                _connection.Close();
                 await _connection.DisposeAsync();
 
                 response.Success = true;
@@ -293,7 +294,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
         private void AddParameters(NpgsqlCommand command, Author author)
         {
-           
+
             command.Parameters.AddWithValue("@FirstName", author.FirstName);
             command.Parameters.AddWithValue("@LastName", author.LastName);
             command.Parameters.AddWithValue("@DateOfBirth", author.DateOfBirth);
@@ -303,5 +304,85 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             command.Parameters.AddWithValue("@DateUpdated", author.DateUpdated);
 
         }
+
+        public async Task<ServiceResponse<List<Author>>> GetAuthorWithFilterPageingAndSort(FilterForAuthor filter, Paging paging, SortOrder sort)
+        {
+            var response = new ServiceResponse<List<Author>>();
+
+            StringBuilder query = new StringBuilder();
+
+            var listFromDB = new List<Author>();
+
+            if (!string.IsNullOrWhiteSpace(filter.LastName))
+            {
+                query.Append("SELECT * FROM \"Author\" WHERE \"LastName\" LIKE '%" + filter.LastName + "%';");
+            }
+
+            if (CheckIfObjectIsEmpty(filter))
+            {
+                query.Append("SELECT * FROM \"Author\" WHERE \"IsActive\" = true;");
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.FirstName))
+            {
+                query.Clear();
+               
+                query.Append("SELECT * FROM \"Author\" WHERE \"FirstName\" LIKE '%" + filter.FirstName + "%';");
+               
+            }
+            if (filter.DateOfBirth is not null)
+            {
+                query.Clear();
+
+                string date = filter.DateOfBirth.ToString();
+
+                query.Append("SELECT * FROM \"Author\" WHERE \"DateOfBirth\" LIKE '%" + filter.DateOfBirth + "%';");
+
+            }
+
+            var command = new NpgsqlCommand(query.ToString(), _connection);
+
+            _connection.Open();
+
+                var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    listFromDB.Add(new Author
+                    {
+
+                        Id = reader.GetInt32(0),
+                        Uuid = reader.GetGuid(1),
+                        FirstName = reader.GetString(2),
+                        LastName = reader.GetString(3),
+                        DateOfBirth = reader.GetDateTime(4),
+                        Bio = reader.GetString(5),
+                        IsActive = reader.GetBoolean(6),
+                        DateCreated = reader.GetDateTime(7),
+                        DateUpdated = reader.GetDateTime(8),
+
+                    });
+                }
+
+                _connection.Close();
+                await reader.DisposeAsync();
+
+                response.Data = listFromDB;
+                response.Success = true;
+
+                return response;
+
+        }
+
+        private bool CheckIfObjectIsEmpty<T>(T obj)
+        {
+            if (EqualityComparer<T>.Default.Equals(obj, default))
+            {
+                return false;
+            }
+            return true;
+        }
+
+      
     }
 }

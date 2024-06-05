@@ -20,7 +20,7 @@ namespace SuperSimpleCookbook.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var response = await _service.GetAll();
+            var response = await _service.GetAllAsync();
 
             if (response.Success == false)
             {
@@ -34,7 +34,7 @@ namespace SuperSimpleCookbook.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> GetbyId(int id)
         {
-            var response = await _service.GetById(id);
+            var response = await _service.GetByIdAsync(id);
 
             if (response.Success == false)
             {
@@ -49,7 +49,7 @@ namespace SuperSimpleCookbook.Controllers
         [Route("NotActive")]
         public async Task<IActionResult> GetNotActive()
         {
-            var response = await _service.GetNotActive();
+            var response = await _service.GetNotActiveAsync();
 
             if (response.Success == false)
             {
@@ -68,7 +68,7 @@ namespace SuperSimpleCookbook.Controllers
                 return BadRequest();
             }
 
-            var response = await _service.Create(newRecipe);
+            var response = await _service.CreateAsync(newRecipe);
 
             if (response.Success == false)
             {
@@ -88,7 +88,7 @@ namespace SuperSimpleCookbook.Controllers
                 return BadRequest();
             }
 
-            var response = await _service.Update(newRecipe, id);
+            var response = await _service.UpdateAsync(newRecipe, id);
 
             if (response.Success == false)
             {
@@ -103,7 +103,7 @@ namespace SuperSimpleCookbook.Controllers
         [Route("Delete/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var response = await _service.Delete(id);
+            var response = await _service.DeleteAsync(id);
 
             if(response)
             {
