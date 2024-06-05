@@ -293,19 +293,6 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
             }
         }
 
-        private void AddParameters(NpgsqlCommand command, Author author)
-        {
-
-            command.Parameters.AddWithValue("@FirstName", author.FirstName);
-            command.Parameters.AddWithValue("@LastName", author.LastName);
-            command.Parameters.AddWithValue("@DateOfBirth", author.DateOfBirth);
-            command.Parameters.AddWithValue("@Bio", author.Bio);
-            command.Parameters.AddWithValue("@IsActive", author.IsActive);
-            command.Parameters.AddWithValue("@DateCreated", author.DateCreated);
-            command.Parameters.AddWithValue("@DateUpdated", author.DateUpdated);
-
-        }
-
         public async Task<ServiceResponse<List<Author>>> GetAuthorWithFilterPageingAndSort(FilterForAuthor filter, Paging paging, SortOrder sort)
         {
             var response = new ServiceResponse<List<Author>>();
@@ -316,23 +303,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
             var command = new NpgsqlCommand(query.ToString(), _connection);
 
-            if (!string.IsNullOrWhiteSpace(filter.FirstName))
-            {
-                command.Parameters.AddWithValue("@FirstName", "%" + filter.FirstName + "%");
-            }
-            if (!string.IsNullOrWhiteSpace(filter.LastName))
-            {
-                command.Parameters.AddWithValue("@LastName", "%" + filter.LastName + "%");
-            }
-            if (filter.DateOfBirth is not null)
-            {
-                command.Parameters.AddWithValue("@DateOfBirth", filter.DateOfBirth.Value.Date);
-            }
-            if (filter.DateCreated is not null)
-            {
-                command.Parameters.AddWithValue("@DateCreated", filter.DateCreated.Value.Date);
-            }
-
+            SetFilterParams(command, filter);
 
             _connection.Open();
 
@@ -403,6 +374,39 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
 
             return query;
         }
-      
+
+        private void SetFilterParams(NpgsqlCommand command, FilterForAuthor filter)
+        {
+            if (!string.IsNullOrWhiteSpace(filter.FirstName))
+            {
+                command.Parameters.AddWithValue("@FirstName", "%" + filter.FirstName + "%");
+            }
+            if (!string.IsNullOrWhiteSpace(filter.LastName))
+            {
+                command.Parameters.AddWithValue("@LastName", "%" + filter.LastName + "%");
+            }
+            if (filter.DateOfBirth is not null)
+            {
+                command.Parameters.AddWithValue("@DateOfBirth", filter.DateOfBirth.Value.Date);
+            }
+            if (filter.DateCreated is not null)
+            {
+                command.Parameters.AddWithValue("@DateCreated", filter.DateCreated.Value.Date);
+            }
+        }
+        private void AddParameters(NpgsqlCommand command, Author author)
+        {
+
+            command.Parameters.AddWithValue("@FirstName", author.FirstName);
+            command.Parameters.AddWithValue("@LastName", author.LastName);
+            command.Parameters.AddWithValue("@DateOfBirth", author.DateOfBirth);
+            command.Parameters.AddWithValue("@Bio", author.Bio);
+            command.Parameters.AddWithValue("@IsActive", author.IsActive);
+            command.Parameters.AddWithValue("@DateCreated", author.DateCreated);
+            command.Parameters.AddWithValue("@DateUpdated", author.DateUpdated);
+
+        }
+
+
     }
 }
