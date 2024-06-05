@@ -8,8 +8,7 @@ namespace SuperSimpleCookbook.Common
 {
     public class FilterForAuthor
     {
-        public Guid? Uuid { get; set; }
-
+   
         public string? FirstName { get; set; }
 
         public string? LastName { get; set; } 

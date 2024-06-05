@@ -309,38 +309,40 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
         {
             var response = new ServiceResponse<List<Author>>();
 
-            StringBuilder query = new StringBuilder();
+            StringBuilder query = new StringBuilder("SELECT * FROM \"Author\" WHERE \"IsActive\" = true");
 
             var listFromDB = new List<Author>();
 
-            if (!string.IsNullOrWhiteSpace(filter.LastName))
-            {
-                query.Append("SELECT * FROM \"Author\" WHERE \"LastName\" LIKE '%" + filter.LastName + "%';");
-            }
-
-            if (CheckIfObjectIsEmpty(filter))
-            {
-                query.Append("SELECT * FROM \"Author\" WHERE \"IsActive\" = true;");
-            }
-
             if (!string.IsNullOrWhiteSpace(filter.FirstName))
             {
-                query.Clear();
-               
-                query.Append("SELECT * FROM \"Author\" WHERE \"FirstName\" LIKE '%" + filter.FirstName + "%';");
-               
+                query.Append(" AND \"FirstName\" LIKE @FirstName");
             }
+
+            if (!string.IsNullOrWhiteSpace(filter.LastName))
+            {
+                query.Append(" AND \"LastName\" LIKE @LastName");
+            }
+
             if (filter.DateOfBirth is not null)
             {
-                query.Clear();
-
-                string date = filter.DateOfBirth.ToString();
-
-                query.Append("SELECT * FROM \"Author\" WHERE \"DateOfBirth\" LIKE '%" + filter.DateOfBirth + "%';");
-
+                query.Append(" AND DATE(\"DateOfBirth\") = @DateOfBirth");
             }
 
             var command = new NpgsqlCommand(query.ToString(), _connection);
+
+            if (!string.IsNullOrWhiteSpace(filter.FirstName))
+            {
+                command.Parameters.AddWithValue("@FirstName", "%" + filter.FirstName + "%");
+            }
+            if (!string.IsNullOrWhiteSpace(filter.LastName))
+            {
+                command.Parameters.AddWithValue("@LastName", "%" + filter.LastName + "%");
+            }
+            if (filter.DateOfBirth is not null)
+            {
+                command.Parameters.AddWithValue("@DateOfBirth", filter.DateOfBirth.Value.Date);
+            }
+
 
             _connection.Open();
 
@@ -367,22 +369,30 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
                 _connection.Close();
                 await reader.DisposeAsync();
 
+            if (listFromDB is not null)
+            {
+
                 response.Data = listFromDB;
                 response.Success = true;
 
                 return response;
-
-        }
-
-        private bool CheckIfObjectIsEmpty<T>(T obj)
-        {
-            if (EqualityComparer<T>.Default.Equals(obj, default))
-            {
-                return false;
             }
-            return true;
+            else
+            {
+                response.Message = "No data in database";
+                response.Success = false;
+                return response;
+            }
         }
 
+        private StringBuilder ReturnConditionString(FilterForAuthor filter)
+        {
+            StringBuilder condition = new StringBuilder("SELECT * FROM \"Author\"");
+
+
+
+            return condition;
+        }
       
     }
 }
