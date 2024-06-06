@@ -15,16 +15,16 @@ namespace SuperSimpleCookbook
         protected override void Load(ContainerBuilder builder)
         {
            builder.RegisterType<AuthorService>()
-                .As<IAuthorService<Author, AuthorRecipe>>().InstancePerLifetimeScope();
+                .As<IAuthorService<Author, AuthorRecipe>>().InstancePerDependency();
 
             builder.RegisterType<RecipeService>()
-                .As<IRecipeService<Recipe>>().InstancePerLifetimeScope();
+                .As<IRecipeService<Recipe>>().InstancePerDependency();
 
             builder.RegisterType<AuthorRepository>()
-                .As<IRepositoryAuthor<Author, AuthorRecipe>>().InstancePerLifetimeScope();
+                .As<IRepositoryAuthor<Author, AuthorRecipe>>().InstancePerDependency();
 
             builder.RegisterType<RecipeRepository>()
-                .As<IRepositoryRecipe<Recipe>>().InstancePerLifetimeScope();
+                .As<IRepositoryRecipe<Recipe>>().InstancePerDependency();
                 
         }
     }
