@@ -10,7 +10,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SuperSimpleCookbook.Service.RecipeService
+namespace SuperSimpleCookbook.Service
 {
     public class RecipeService : IRecipeService<Recipe>
     {
@@ -21,11 +21,11 @@ namespace SuperSimpleCookbook.Service.RecipeService
             _repository = repository;
         }
 
-        public async Task <ServiceResponse<Recipe>> CreateAsync(Recipe entity)
+        public async Task<ServiceResponse<Recipe>> CreateAsync(Recipe entity)
         {
             var response = await _repository.PostAsync(entity);
 
-            if (response.Success == false) 
+            if (response.Success == false)
             {
                 return response;
             }
@@ -63,11 +63,11 @@ namespace SuperSimpleCookbook.Service.RecipeService
             return response;
         }
 
-        public async Task <ServiceResponse<List<Recipe>>> GetNotActiveAsync()
+        public async Task<ServiceResponse<List<Recipe>>> GetNotActiveAsync()
         {
             var response = await _repository.GetNotActiveAsync();
 
-            if (response.Success == false) 
+            if (response.Success == false)
             {
                 return response;
             }
@@ -75,12 +75,12 @@ namespace SuperSimpleCookbook.Service.RecipeService
             return response;
         }
 
-        public async Task<ServiceResponse<List<Recipe>>> 
+        public async Task<ServiceResponse<List<Recipe>>>
             GetRecipeWithFilterPagingAndSortAsync(FilterForRecipe filter, Paging paging, SortOrder sort)
         {
             var response = await _repository.GetRecipeWithFilterPagingAndSortAsync(filter, paging, sort);
 
-            if(response.Success == false)
+            if (response.Success == false)
             {
                 return response;
 
@@ -89,7 +89,7 @@ namespace SuperSimpleCookbook.Service.RecipeService
             return response;
         }
 
-        public async Task <ServiceResponse<Recipe>> UpdateAsync(Recipe entity, int id)
+        public async Task<ServiceResponse<Recipe>> UpdateAsync(Recipe entity, int id)
         {
             var response = await _repository.PutAsync(entity, id);
 

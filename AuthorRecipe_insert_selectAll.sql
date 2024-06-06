@@ -39,4 +39,8 @@ inner join "AuthorRecipe" on "Author"."Id" = "AuthorRecipe"."AuthorId"
 inner join "Recipe" on "Recipe"."Id" = "AuthorRecipe"."RecipeId"
 	where "Author"."Uuid" = '13210dca-fc16-44ea-85fd-2e077b5c2e19';
 
-
+select "Author"."FirstName", "Author"."LastName", "Recipe"."Title"
+from "Author"
+inner join "AuthorRecipe" on "Author"."Id" = "AuthorRecipe"."AuthorId"
+inner join "Recipe" on "Recipe"."Id" = "AuthorRecipe"."RecipeId"
+	where "Author"."FirstName" Like '%Ma%';

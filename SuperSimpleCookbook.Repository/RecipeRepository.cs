@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SuperSimpleCookbook.Repository.RecipeRepository
+namespace SuperSimpleCookbook.Repository
 {
     public class RecipeRepository : IRepositoryRecipe<Recipe>
     {
@@ -40,7 +40,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             }
         }
 
-        public async Task <ServiceResponse<Recipe>> GetAsync(int id)
+        public async Task<ServiceResponse<Recipe>> GetAsync(int id)
         {
             var response = new ServiceResponse<Recipe>();
 
@@ -81,7 +81,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             }
         }
 
-        public async Task <ServiceResponse<List<Recipe>>> GetAllAsync()
+        public async Task<ServiceResponse<List<Recipe>>> GetAllAsync()
         {
             var response = new ServiceResponse<List<Recipe>>();
 
@@ -124,12 +124,12 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             return response;
         }
 
-        public async Task <ServiceResponse<List<Recipe>>> GetNotActiveAsync()
+        public async Task<ServiceResponse<List<Recipe>>> GetNotActiveAsync()
         {
-            var response = new ServiceResponse <List<Recipe>>();
+            var response = new ServiceResponse<List<Recipe>>();
 
             string commandText = "SELECT * FROM \"Recipe\" where \"IsActive\" = false;";
-            
+
             var listFromDB = new List<Recipe>();
             var command = new NpgsqlCommand(commandText, _connection);
 
@@ -169,7 +169,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             return response;
         }
 
-        public async Task <ServiceResponse<Recipe>> PostAsync(Recipe item)
+        public async Task<ServiceResponse<Recipe>> PostAsync(Recipe item)
         {
             var response = new ServiceResponse<Recipe>();
             try
@@ -235,7 +235,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             }
         }
 
-        public async Task<ServiceResponse<List<Recipe>>> 
+        public async Task<ServiceResponse<List<Recipe>>>
             GetRecipeWithFilterPagingAndSortAsync(FilterForRecipe filter, Paging paging, SortOrder sort)
         {
             var response = new ServiceResponse<List<Recipe>>();
@@ -302,7 +302,13 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             {
                 command.Parameters.AddWithValue("@DateCreated", filter.DateCreated.Value.Date);
             }
-            
+
+            //if(!string.IsNullOrWhiteSpace(filter.AuthorName))
+            //{
+            //    command.Parameters.AddWithValue("@Author", filter.AuthorName);
+            //}
+
+
             if (!string.IsNullOrWhiteSpace(sort.OrderBy))
             {
                 command.Parameters.AddWithValue("@OrderBy", sort.OrderBy);
@@ -311,6 +317,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             {
                 command.Parameters.AddWithValue("@OrderDirection", sort.OrderDirection);
             }
+
 
             command.Parameters.AddWithValue("@PageSize", paging.PageSize);
             command.Parameters.AddWithValue("@PageNumber", paging.PageNumber);
@@ -321,6 +328,15 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
         {
             StringBuilder query = new StringBuilder("SELECT * FROM \"Recipe\" WHERE \"IsActive\" = true");
 
+            //if (!string.IsNullOrWhiteSpace(filter.AuthorName)) 
+            //{
+            //    query.Clear();
+            //    query.Append("SELECT \"Author\".\"FirstName\", \"Author\".\"LastName\", \"Recipe\".\"Title\" " +
+            //    "FROM \"Author\"" +
+            //    " INNER JOIN \"AuthorRecipe\" ON \"Author\".\"Id\" = \"AuthorRecipe\".\"AuthorId\"" +
+            //    " INNER JOIN \"Recipe\" ON \"Recipe\".\"Id\" = \"AuthorRecipe\".\"RecipeId\"" +
+            //    " WHERE \"Author\".\"FirstName\" Like @FirstName");
+            //}
 
             if (!string.IsNullOrWhiteSpace(filter.Title))
             {
@@ -364,7 +380,7 @@ namespace SuperSimpleCookbook.Repository.RecipeRepository
             cmd.Parameters.AddWithValue("@DateUpdated", item.DateUpdated);
         }
 
-        
+
     }
 }
 

@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Schema;
 
-namespace SuperSimpleCookbook.Repository.AuthorRepository
+namespace SuperSimpleCookbook.Repository
 {
     public class AuthorRepository : IRepositoryAuthor<Author, AuthorRecipe>
     {
@@ -350,6 +350,7 @@ namespace SuperSimpleCookbook.Repository.AuthorRepository
         private StringBuilder ReturnConditionString(FilterForAuthor filter, Paging paging, SortOrder sort)
         {
             StringBuilder query = new StringBuilder("SELECT * FROM \"Author\" WHERE \"IsActive\" = true");
+
 
 
             if (!string.IsNullOrWhiteSpace(filter.FirstName))

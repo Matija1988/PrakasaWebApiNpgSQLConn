@@ -7,8 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="8.0.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SuperSimpleCookbook.Common\SuperSimpleCookbook.Common.csproj" />
     <ProjectReference Include="..\SuperSimpleCookbook.Model\SuperSimpleCookbook.Model.csproj" />
+	  <!--<ProjectReference Include="..\SuperSimpleCookbook.Repository\SuperSimpleCookbook.Repository.csproj" />-->
   </ItemGroup>
 
 </Project>

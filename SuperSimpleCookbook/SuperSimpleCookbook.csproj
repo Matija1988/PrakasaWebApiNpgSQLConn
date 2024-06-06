@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="8.0.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Npgsql" Version="8.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
@@ -14,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SuperSimpleCookbook.Common\SuperSimpleCookbook.Common.csproj" />
     <ProjectReference Include="..\SuperSimpleCookbook.Model\SuperSimpleCookbook.Model.csproj" />
+    <ProjectReference Include="..\SuperSimpleCookbook.Repository.Common\SuperSimpleCookbook.Repository.Common.csproj" />
     <ProjectReference Include="..\SuperSimpleCookbook.Repository\SuperSimpleCookbook.Repository.csproj" />
     <ProjectReference Include="..\SuperSimpleCookbook.Service.Common\SuperSimpleCookbook.Service.Common.csproj" />
     <ProjectReference Include="..\SuperSimpleCookBook.Service\SuperSimpleCookbook.Service.csproj" />

@@ -13,9 +13,11 @@ namespace SuperSimpleCookbook.Common
 
         public string? Subtitle { get; set; } 
 
-        public DateTime? DateCreated { get; set; } 
+        public DateTime? DateCreated { get; set; }
 
-        
+     //   public string? AuthorName { get; set; }
+
+
 
     }
 }
