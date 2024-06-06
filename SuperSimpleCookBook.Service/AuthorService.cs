@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 
 namespace SuperSimpleCookbook.Service
 {
+
+    #region Constructor
     public class AuthorService : IAuthorService<Author, AuthorRecipe>
     {
         private readonly IRepositoryAuthor<Author, AuthorRecipe> _repository;
@@ -18,6 +20,10 @@ namespace SuperSimpleCookbook.Service
         {
             _repository = repository;
         }
+
+        #endregion
+
+
 
         public async Task<ServiceResponse<Author>> CreateAsync(Author entity)
         {
@@ -31,16 +37,13 @@ namespace SuperSimpleCookbook.Service
             return response;
         }
 
-        public Task<bool> Delete(Guid uuid)
+        public async Task<bool> DeleteAsync(Guid uuid)
         {
-            return _repository.DeleteAsync(uuid);
+            return await _repository.DeleteAsync(uuid);
+            
         }
 
-        public Task<bool> DeleteAsync(Guid uuid)
-        {
-            throw new NotImplementedException();
-        }
-
+        #region GetMethods
         public async Task<ServiceResponse<List<Author>>> GetAllAsync()
         {
             var response = await _repository.GetAllAsync();
@@ -90,17 +93,6 @@ namespace SuperSimpleCookbook.Service
             return response;
         }
 
-        public async Task<ServiceResponse<Author>> UpdateAsync(Author entity, Guid uuid)
-        {
-            var response = await _repository.PutAsync(entity, uuid);
-
-            if (response.Success == false)
-            {
-                return response;
-            }
-            return response;
-
-        }
 
         public async Task<ServiceResponse<List<Author>>> GetAuthorWithFilterPagingAndSortAsync
             (FilterForAuthor filter, Paging paging, SortOrder sort)
@@ -112,6 +104,20 @@ namespace SuperSimpleCookbook.Service
                 return response;
             }
 
+            return response;
+
+        }
+
+        #endregion
+
+        public async Task<ServiceResponse<Author>> UpdateAsync(Author entity, Guid uuid)
+        {
+            var response = await _repository.PutAsync(entity, uuid);
+
+            if (response.Success == false)
+            {
+                return response;
+            }
             return response;
 
         }

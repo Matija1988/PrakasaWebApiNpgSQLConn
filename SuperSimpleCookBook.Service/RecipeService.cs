@@ -12,8 +12,10 @@ using System.Threading.Tasks;
 
 namespace SuperSimpleCookbook.Service
 {
+   
     public class RecipeService : IRecipeService<Recipe>
     {
+        #region Constructor
         private readonly IRepositoryRecipe<Recipe> _repository;
 
         public RecipeService(IRepositoryRecipe<Recipe> repository)
@@ -21,6 +23,7 @@ namespace SuperSimpleCookbook.Service
             _repository = repository;
         }
 
+        #endregion
         public async Task<ServiceResponse<Recipe>> CreateAsync(Recipe entity)
         {
             var response = await _repository.PostAsync(entity);
@@ -33,10 +36,12 @@ namespace SuperSimpleCookbook.Service
             return response;
         }
 
-        public Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            return _repository.DeleteAsync(id);
+            return await _repository.DeleteAsync(id);
         }
+
+        #region GetMethods
 
         public async Task<ServiceResponse<List<Recipe>>> GetAllAsync()
         {
@@ -88,6 +93,8 @@ namespace SuperSimpleCookbook.Service
 
             return response;
         }
+
+        #endregion
 
         public async Task<ServiceResponse<Recipe>> UpdateAsync(Recipe entity, int id)
         {

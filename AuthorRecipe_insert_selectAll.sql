@@ -43,4 +43,5 @@ select "Author"."FirstName", "Author"."LastName", "Recipe"."Title"
 from "Author"
 inner join "AuthorRecipe" on "Author"."Id" = "AuthorRecipe"."AuthorId"
 inner join "Recipe" on "Recipe"."Id" = "AuthorRecipe"."RecipeId"
-	where "Author"."FirstName" Like '%Ma%';
+	where "Author"."FirstName" Like '%Ma%'
+	and "Author"."LastName" like '%Fi%';
