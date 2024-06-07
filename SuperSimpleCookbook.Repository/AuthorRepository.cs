@@ -298,18 +298,13 @@ namespace SuperSimpleCookbook.Repository
         {
             var response = new ServiceResponse<List<Author>>();
 
-            var command = new NpgsqlCommand();
-
-            StringBuilder query = ReturnConditionString(command, filter, paging, sort);
+            StringBuilder query = ReturnConditionString(filter, paging, sort);
 
             var listFromDB = new List<Author>();
 
-            command.CommandText = query.ToString();
-            command.Connection = _connection;
+            var command = new NpgsqlCommand(query.ToString(), _connection);
 
-            command.Parameters.AddWithValue("@PageSize", paging.PageSize);
-            command.Parameters.AddWithValue("@PageNumber", paging.PageNumber);
-
+            SetFilterParams(command, filter, paging, sort);
 
             _connection.Open();
 
@@ -354,61 +349,81 @@ namespace SuperSimpleCookbook.Repository
 
         #region Extensions
 
-        private StringBuilder ReturnConditionString(NpgsqlCommand command, FilterForAuthor filter, Paging paging, SortOrder sort)
+        private StringBuilder ReturnConditionString(FilterForAuthor filter, Paging paging, SortOrder sort)
         {
             StringBuilder query = new StringBuilder("SELECT * FROM \"Author\" WHERE \"IsActive\" = true");
 
+
+
             if (!string.IsNullOrWhiteSpace(filter.FirstName))
             {
-                command.Parameters.AddWithValue("@FirstName", "%" + filter.FirstName + "%");
                 query.Append(" AND \"FirstName\" LIKE @FirstName");
-               
             }
 
             if (!string.IsNullOrWhiteSpace(filter.LastName))
             {
-                command.Parameters.AddWithValue("@LastName", "%" + filter.LastName + "%");
                 query.Append(" AND \"LastName\" LIKE @LastName");
-               
             }
 
             if (filter.DateOfBirth is not null)
             {
-                command.Parameters.AddWithValue("@DateOfBirth", filter.DateOfBirth.Value.Date);
                 query.Append(" AND DATE(\"DateOfBirth\") = @DateOfBirth");
-              
             }
 
             if (filter.DateCreated is not null)
             {
-                command.Parameters.AddWithValue("@DateCreated", filter.DateCreated.Value.Date);
                 query.Append(" AND DATE(\"DateCreated\") = @DateCreated");
-               
             }
 
             if (!string.IsNullOrEmpty(sort.OrderDirection) && !string.IsNullOrEmpty(sort.OrderBy))
             {
-                command.Parameters.AddWithValue("@OrderBy", sort.OrderBy);
-                command.Parameters.AddWithValue("@OrderDirection", sort.OrderDirection);
                 query.Append($" ORDER BY \"{sort.OrderBy}\"  {sort.OrderDirection} ");
-             
 
             }
 
             if (int.IsPositive(paging.PageSize) && paging.PageNumber > 0)
             {
-              
                 int page = (paging.PageNumber - 1) * paging.PageSize;
 
                 query.Append(" LIMIT @PageSize OFFSET " + page);
-
 
             }
 
             return query;
         }
 
-    
+        private void SetFilterParams
+            (NpgsqlCommand command, FilterForAuthor filter, Paging paging, SortOrder sort)
+        {
+            if (!string.IsNullOrWhiteSpace(filter.FirstName))
+            {
+                command.Parameters.AddWithValue("@FirstName", "%" + filter.FirstName + "%");
+            }
+            if (!string.IsNullOrWhiteSpace(filter.LastName))
+            {
+                command.Parameters.AddWithValue("@LastName", "%" + filter.LastName + "%");
+            }
+            if (filter.DateOfBirth is not null)
+            {
+                command.Parameters.AddWithValue("@DateOfBirth", filter.DateOfBirth.Value.Date);
+            }
+            if (filter.DateCreated is not null)
+            {
+                command.Parameters.AddWithValue("@DateCreated", filter.DateCreated.Value.Date);
+            }
+            if (!string.IsNullOrWhiteSpace(sort.OrderBy))
+            {
+                command.Parameters.AddWithValue("@OrderBy", sort.OrderBy);
+            }
+            if (!string.IsNullOrWhiteSpace(sort.OrderDirection))
+            {
+                command.Parameters.AddWithValue("@OrderDirection", sort.OrderDirection);
+            }
+
+            command.Parameters.AddWithValue("@PageSize", paging.PageSize);
+            command.Parameters.AddWithValue("@PageNumber", paging.PageNumber);
+
+        }
         private void AddParameters(NpgsqlCommand command, Author author)
         {
             command.Parameters.AddWithValue("@FirstName", author.FirstName);
