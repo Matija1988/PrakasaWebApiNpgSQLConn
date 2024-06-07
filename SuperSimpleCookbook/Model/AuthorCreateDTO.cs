@@ -2,7 +2,7 @@
 
 namespace SuperSimpleCookbook.Model
 {
-    public class AuthorUpsertDTO
+    public class AuthorCreateDTO
     {
         [Required, StringLength(30, ErrorMessage = "Maximum allowed number of characters = 30")]
         public string FirstName { get; set; }
@@ -10,6 +10,7 @@ namespace SuperSimpleCookbook.Model
         [Required, StringLength(30, ErrorMessage = "Maximum allowed number of characters = 30")]
         public string LastName { get; set; }
 
+       
         public DateTime? DateOfBirth { get; set; }
 
         [Required, StringLength(1200, ErrorMessage = "Maximum allowed number of characters = 1200")]

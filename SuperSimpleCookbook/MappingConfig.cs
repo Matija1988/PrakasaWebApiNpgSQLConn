@@ -8,7 +8,7 @@ namespace SuperSimpleCookbook
         public MappingConfig()
         {
             CreateMap<Author, AuthorReadDTO>().ReverseMap();
-            CreateMap<Author, AuthorUpsertDTO>().ReverseMap();
+            CreateMap<Author, AuthorCreateDTO>().ReverseMap();
 
         }
     }

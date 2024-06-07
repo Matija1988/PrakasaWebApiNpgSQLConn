@@ -117,13 +117,17 @@ namespace SuperSimpleCookbook.Controllers
         [HttpPost]
         [Route("CreateAuthor")]
 
-        public async Task<IActionResult> Create([FromBody] Author author)
+        public async Task<IActionResult> Create([FromBody] AuthorCreateDTO authorDTO)
         {
             if(!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
+            var author = new Author();
+
+            author = _mapper.Map<AuthorCreateDTO, Author>(authorDTO);
+            
             var response = await _service.CreateAsync(author);
 
             if (response.Success == false)
@@ -131,7 +135,7 @@ namespace SuperSimpleCookbook.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
             }
 
-            return StatusCode(StatusCodes.Status201Created, response.Data);
+            return StatusCode(StatusCodes.Status201Created);
 
         }
 

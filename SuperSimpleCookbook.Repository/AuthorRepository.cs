@@ -237,10 +237,7 @@ namespace SuperSimpleCookbook.Repository
                 using var cmd = _connection.CreateCommand();
                 cmd.CommandText = commandText;
 
-                Guid guid = Guid.NewGuid();
-
-                cmd.Parameters.AddWithValue("@Uuid", item.Uuid = guid);
-
+                
                 AddParameters(cmd, item);
                 _connection.Open();
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
@@ -424,7 +421,7 @@ namespace SuperSimpleCookbook.Repository
         }
         private void AddParameters(NpgsqlCommand command, Author author)
         {
-
+            command.Parameters.AddWithValue("@Uuid", author.Uuid);
             command.Parameters.AddWithValue("@FirstName", author.FirstName);
             command.Parameters.AddWithValue("@LastName", author.LastName);
             command.Parameters.AddWithValue("@DateOfBirth", author.DateOfBirth);

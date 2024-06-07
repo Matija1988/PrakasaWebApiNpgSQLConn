@@ -5,6 +5,7 @@ using SuperSimpleCookbook.Repository.Common.Interfaces;
 using SuperSimpleCookbook.Service.Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,13 @@ namespace SuperSimpleCookbook.Service
 
         public async Task<ServiceResponse<Author>> CreateAsync(Author entity)
         {
+            entity.IsActive = true;
+            entity.DateCreated = DateTime.Now;
+            entity.DateUpdated = DateTime.Now;
+            entity.Uuid = Guid.NewGuid();
+
+            Debug.WriteLine(entity.Uuid);
+
             var response = await _repository.PostAsync(entity);
 
             if (response.Success == false)
