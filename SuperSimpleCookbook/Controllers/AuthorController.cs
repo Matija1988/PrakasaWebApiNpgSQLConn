@@ -8,7 +8,8 @@ using SuperSimpleCookbook.Model;
 using SuperSimpleCookbook.Service.Common;
 using SuperSimpleCookbook.Model.Model;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
-using SuperSimpleCookbook.Common; 
+using SuperSimpleCookbook.Common;
+using AutoMapper;
 
 namespace SuperSimpleCookbook.Controllers
 {
@@ -18,9 +19,13 @@ namespace SuperSimpleCookbook.Controllers
     {
         
         private readonly IAuthorService<Author, AuthorRecipe> _service;
-        public AuthorController(IAuthorService<Author, AuthorRecipe> service)
+
+        private readonly IMapper _mapper;
+
+        public AuthorController(IAuthorService<Author, AuthorRecipe> service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
 
         }
 
@@ -38,7 +43,15 @@ namespace SuperSimpleCookbook.Controllers
                 return BadRequest(response.Message);
             }
 
-            return Ok(response.Data);
+            List<AuthorReadDTO> authorDTO = new List<AuthorReadDTO>();
+
+            foreach (var item in response.Data)
+            {
+                authorDTO.Add(_mapper.Map<Author, AuthorReadDTO>(item));
+            }
+
+
+            return Ok(authorDTO);
 
         }
 
@@ -52,7 +65,14 @@ namespace SuperSimpleCookbook.Controllers
                 return NotFound(response.Message);
             }
 
-            return Ok(response.Data);
+            List<AuthorReadDTO> authorDTO = new List<AuthorReadDTO>();
+
+            foreach (var item in response.Data) 
+            {
+                authorDTO.Add(_mapper.Map<Author, AuthorReadDTO>(item));
+            }
+
+            return Ok(authorDTO);
         }
 
         [HttpGet]
@@ -65,7 +85,15 @@ namespace SuperSimpleCookbook.Controllers
             {
                 return NotFound(response.Message);
             }
-            return Ok(response.Data);
+
+            List<AuthorReadDTO> authorDTO = new List<AuthorReadDTO>();
+
+            foreach (var item in response.Data)
+            {
+                authorDTO.Add(_mapper.Map<Author, AuthorReadDTO>(item));
+            }
+
+            return Ok(authorDTO);
         }
 
 
@@ -80,7 +108,9 @@ namespace SuperSimpleCookbook.Controllers
                 return NotFound(response.Message);
             }
 
-            return Ok(response.Data);    
+            var authorDTO = _mapper.Map<Author, AuthorReadDTO>(response.Data);
+
+            return Ok(authorDTO);    
 
         }
 
@@ -148,10 +178,10 @@ namespace SuperSimpleCookbook.Controllers
             {
                 return NotFound(response.Message);
             }
+
             return Ok(response.Data);
 
         }
-
 
     }
 
