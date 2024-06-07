@@ -44,7 +44,7 @@ namespace SuperSimpleCookbook.Repository
         {
             var response = new ServiceResponse<Recipe>();
 
-            string commandText = "SELECT \"Title\", \"Subtitle\"  FROM \"Recipe\" WHERE \"Id\" = @id;";
+            string commandText = "SELECT \"Title\", \"Subtitle\", \"Text\"  FROM \"Recipe\" WHERE \"Id\" = @id;";
 
             var command = new NpgsqlCommand(commandText, _connection);
 
@@ -61,6 +61,7 @@ namespace SuperSimpleCookbook.Repository
 
                         Title = reader.GetString(0),
                         Subtitle = reader.GetString(1),
+                        Text = reader.GetString(2)
 
                     };
 
@@ -181,6 +182,8 @@ namespace SuperSimpleCookbook.Repository
                 using var cmd = _connection.CreateCommand();
                 cmd.CommandText = commandText;
 
+                cmd.Parameters.AddWithValue("@DateCreated", item.DateCreated);
+
                 AddParameters(cmd, item);
                 _connection.Open();
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
@@ -206,15 +209,13 @@ namespace SuperSimpleCookbook.Repository
 
             try
             {
-                const string commandText = "UPDATE \"Recipe\" SET \"Id\" = @Id, \"Title\" =@Title, \"Subtitle\" = @Subtitle, " +
-                    "\"IsActive\" = @IsActive, \"DateUpdated\" = @DateUpdated WHERE \"Id\" = @id;";
+                const string commandText = "UPDATE \"Recipe\" SET \"Title\" =@Title, " +
+                    "\"Subtitle\" = @Subtitle, \"Text\" =@Text, " +
+                    " \"IsActive\" = @IsActive, \"DateUpdated\" = @DateUpdated WHERE \"Id\" = @Id;";
 
                 using var cmd = _connection.CreateCommand();
                 cmd.CommandText = commandText;
                 AddParameters(cmd, item);
-
-                int tempId = id;
-                item.Id = tempId;
 
                 cmd.Parameters.AddWithValue("@Id", item.Id);
 
@@ -222,10 +223,11 @@ namespace SuperSimpleCookbook.Repository
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
                 _connection.Close();
                 await _connection.DisposeAsync();
-
+                
                 response.Success = true;
                 response.Data = item;
                 return response;
+                
             }
             catch (Exception ex)
             {
@@ -380,7 +382,6 @@ namespace SuperSimpleCookbook.Repository
             cmd.Parameters.AddWithValue("@Subtitle", item.Subtitle);
             cmd.Parameters.AddWithValue("@Text", item.Text);
             cmd.Parameters.AddWithValue("@IsActive", item.IsActive);
-            cmd.Parameters.AddWithValue("@DateCreated", item.DateCreated);
             cmd.Parameters.AddWithValue("@DateUpdated", item.DateUpdated);
         }
 

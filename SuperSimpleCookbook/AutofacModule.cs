@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using AutoMapper;
 using SuperSimpleCookbook.Model;
 using SuperSimpleCookbook.Model.Model;
 using SuperSimpleCookbook.Repository;
@@ -25,7 +26,7 @@ namespace SuperSimpleCookbook
 
             builder.RegisterType<RecipeRepository>()
                 .As<IRepositoryRecipe<Recipe>>().InstancePerDependency();
-                
+
         }
     }
 }

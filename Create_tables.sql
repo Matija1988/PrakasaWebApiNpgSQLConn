@@ -55,7 +55,7 @@ Select * from "Author" where "FirstName" Like '%Ma%' and DATE("DateOfBirth") = '
 select * from "Author" where "IsActive" = true and "FirstName" like '%Mar%'
 
 select * from "Author" where "IsActive" = true order by "FirstName" ASC Limit 3 OFFSET 0;
-
+ 
 select * from "Author" where "IsActive" = true and "Id">= 1 order by "DateCreated" ASC limit 3;
 
 

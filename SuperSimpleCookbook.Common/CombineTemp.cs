@@ -8,10 +8,10 @@ namespace SuperSimpleCookbook.Common
 {
     public class CombineTemp
     {
-        public FilterForAuthor filter { get; set; }
+        public FilterForAuthor? Filter { get; set; }
 
-        public Paging paging { get; set; }
+        public Paging? Paging { get; set; }
 
-        public SortOrder sort { get; set; }
+        public SortOrder? Sort { get; set; }
     }
 }

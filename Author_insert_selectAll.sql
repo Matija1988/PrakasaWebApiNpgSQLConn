@@ -56,4 +56,34 @@ VALUES
 	'2024-03-06'
 	);
 
-select * from "Author";
+INSERT INTO
+	"Author" (
+		"Uuid",
+		"FirstName",
+		"LastName",
+		"DateOfBirth",
+		"Bio",
+		"IsActive",
+		"DateCreated",
+		"DateUpdated"
+	)
+VALUES
+	(
+	uuid_generate_v4(),
+	'Petko',
+	'Odrezak',
+	'1982-06-13',
+	'Bio',
+	'false',
+	'2024-03-06',	
+	'2024-03-06'
+	); 
+
+Update "Author" Set "FirstName" = 'Marko' where "Id" = 8;
+
+	select * from "Author";
+	select * from "Author" where "IsActive" = true;
+
+select "FirstName", "LastName" from "Author" where "Uuid" = 'bfde91db-9c0e-4548-af43-ed8030ae7153';
+
+	
