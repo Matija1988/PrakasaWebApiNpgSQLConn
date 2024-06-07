@@ -26,6 +26,10 @@ namespace SuperSimpleCookbook.Service
         #endregion
         public async Task<ServiceResponse<Recipe>> CreateAsync(Recipe entity)
         {
+            entity.DateCreated = DateTime.Now;  
+            entity.DateUpdated = DateTime.Now;
+            entity.IsActive = true;
+
             var response = await _repository.PostAsync(entity);
 
             if (response.Success == false)

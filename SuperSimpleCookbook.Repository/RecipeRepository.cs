@@ -181,6 +181,8 @@ namespace SuperSimpleCookbook.Repository
                 using var cmd = _connection.CreateCommand();
                 cmd.CommandText = commandText;
 
+                cmd.Parameters.AddWithValue("@DateCreated", item.DateCreated);
+
                 AddParameters(cmd, item);
                 _connection.Open();
                 var rowAffected = await cmd.ExecuteNonQueryAsync();
@@ -376,7 +378,6 @@ namespace SuperSimpleCookbook.Repository
             cmd.Parameters.AddWithValue("@Subtitle", item.Subtitle);
             cmd.Parameters.AddWithValue("@Text", item.Text);
             cmd.Parameters.AddWithValue("@IsActive", item.IsActive);
-            cmd.Parameters.AddWithValue("@DateCreated", item.DateCreated);
             cmd.Parameters.AddWithValue("@DateUpdated", item.DateUpdated);
         }
 

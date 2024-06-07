@@ -22,6 +22,8 @@ namespace SuperSimpleCookbook.Controllers
             _mapper = mapper;
         }
 
+        #region GetMethods
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -32,14 +34,14 @@ namespace SuperSimpleCookbook.Controllers
                 return NotFound(response.Message);
             }
 
-            List<RecipeReadDTO> recipeDTO = new List<RecipeReadDTO>();
+            List<RecipeReadDTO> recipeDTOs = new List<RecipeReadDTO>();
 
             foreach (var item in response.Data) 
             {
-                recipeDTO.Add(_mapper.Map<Recipe, RecipeReadDTO>(item));
+                recipeDTOs.Add(_mapper.Map<Recipe, RecipeReadDTO>(item));
             }
 
-            return Ok(recipeDTO);
+            return Ok(recipeDTOs);
 
         }
         [HttpGet]
@@ -53,7 +55,10 @@ namespace SuperSimpleCookbook.Controllers
                 return NotFound(response.Message);
             }
 
-            return Ok(response.Data);
+            var recipeDTO = new RecipeReadDTO();
+            recipeDTO = _mapper.Map<Recipe, RecipeReadDTO>(response.Data);
+
+            return Ok(recipeDTO);
 
         }
 
@@ -67,18 +72,30 @@ namespace SuperSimpleCookbook.Controllers
             {
                 return NotFound(response.Message);
             }
-            return Ok(response.Data);
+
+            List<RecipeReadDTO> recipeDTOs = new List<RecipeReadDTO>();
+
+            foreach (var item in response.Data)
+            {
+                recipeDTOs.Add(_mapper.Map<Recipe, RecipeReadDTO>(item));
+            }
+
+            return Ok(recipeDTOs);
         }
+
+        #endregion
 
         [HttpPost]
         [Route("CreateRecipe")]
 
-        public async Task<IActionResult> Post([FromBody] Recipe newRecipe)
+        public async Task<IActionResult> Post([FromBody] RecipeCreateDTO item)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
+
+            var newRecipe = _mapper.Map<RecipeCreateDTO, Recipe>(item);
 
             var response = await _service.CreateAsync(newRecipe);
 
@@ -139,7 +156,14 @@ namespace SuperSimpleCookbook.Controllers
                 return BadRequest(response.Message);
             }
 
-            return Ok(response.Data);
+            List<RecipeReadDTO> recipeDTOs = new List<RecipeReadDTO>();
+
+            foreach (var item in response.Data) 
+            {
+                recipeDTOs.Add(_mapper.Map<Recipe, RecipeReadDTO>(item));
+            }
+
+            return Ok(recipeDTOs);
         }
 
     }

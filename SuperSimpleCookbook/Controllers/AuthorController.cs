@@ -37,15 +37,14 @@ namespace SuperSimpleCookbook.Controllers
                 return BadRequest(response.Message);
             }
 
-            List<AuthorReadDTO> authorDTO = new List<AuthorReadDTO>();
+            List<AuthorReadDTO> authorDTOs = new List<AuthorReadDTO>();
 
             foreach (var item in response.Data)
             {
-                authorDTO.Add(_mapper.Map<Author, AuthorReadDTO>(item));
+                authorDTOs.Add(_mapper.Map<Author, AuthorReadDTO>(item));
             }
 
-
-            return Ok(authorDTO);
+            return Ok(authorDTOs);
 
         }
 
@@ -59,14 +58,14 @@ namespace SuperSimpleCookbook.Controllers
                 return NotFound(response.Message);
             }
 
-            List<AuthorReadDTO> authorDTO = new List<AuthorReadDTO>();
+            List<AuthorReadDTO> authorDTOs = new List<AuthorReadDTO>();
 
             foreach (var item in response.Data) 
             {
-                authorDTO.Add(_mapper.Map<Author, AuthorReadDTO>(item));
+                authorDTOs.Add(_mapper.Map<Author, AuthorReadDTO>(item));
             }
 
-            return Ok(authorDTO);
+            return Ok(authorDTOs);
         }
 
         [HttpGet]
@@ -80,14 +79,14 @@ namespace SuperSimpleCookbook.Controllers
                 return NotFound(response.Message);
             }
 
-            List<AuthorReadDTO> authorDTO = new List<AuthorReadDTO>();
+            List<AuthorReadDTO> authorDTOs = new List<AuthorReadDTO>();
 
             foreach (var item in response.Data)
             {
-                authorDTO.Add(_mapper.Map<Author, AuthorReadDTO>(item));
+                authorDTOs.Add(_mapper.Map<Author, AuthorReadDTO>(item));
             }
 
-            return Ok(authorDTO);
+            return Ok(authorDTOs);
         }
 
 
