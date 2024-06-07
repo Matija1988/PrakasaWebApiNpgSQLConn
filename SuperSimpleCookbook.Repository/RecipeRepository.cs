@@ -287,6 +287,9 @@ namespace SuperSimpleCookbook.Repository
             }
         }
 
+
+        #region Extensions
+
         private void SetFilterParams
             (NpgsqlCommand command, FilterForRecipe filter, Paging paging, SortOrder sort)
         {
@@ -323,6 +326,7 @@ namespace SuperSimpleCookbook.Repository
             command.Parameters.AddWithValue("@PageNumber", paging.PageNumber);
 
         }
+
 
         private StringBuilder ReturnConditionString(FilterForRecipe filter, Paging paging, SortOrder sort)
         {
@@ -380,7 +384,7 @@ namespace SuperSimpleCookbook.Repository
             cmd.Parameters.AddWithValue("@DateUpdated", item.DateUpdated);
         }
 
-
+        #endregion
     }
 }
 

@@ -19,6 +19,7 @@ namespace SuperSimpleCookbook.Repository
     public class AuthorRepository : IRepositoryAuthor<Author, AuthorRecipe>
     {
 
+
         private readonly NpgsqlConnection _connection;
         public AuthorRepository()
         {
@@ -347,6 +348,8 @@ namespace SuperSimpleCookbook.Repository
             }
         }
 
+        #region Extensions
+
         private StringBuilder ReturnConditionString(FilterForAuthor filter, Paging paging, SortOrder sort)
         {
             StringBuilder query = new StringBuilder("SELECT * FROM \"Author\" WHERE \"IsActive\" = true");
@@ -435,6 +438,6 @@ namespace SuperSimpleCookbook.Repository
 
         }
 
-
+        #endregion
     }
 }
