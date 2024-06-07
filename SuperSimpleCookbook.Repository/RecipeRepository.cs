@@ -242,13 +242,15 @@ namespace SuperSimpleCookbook.Repository
         {
             var response = new ServiceResponse<List<Recipe>>();
 
-            StringBuilder query = ReturnConditionString(filter, paging, sort);
+            var command = new NpgsqlCommand();
+
+            StringBuilder query = ReturnConditionString(command, filter, paging, sort);
 
             var listFromDB = new List<Recipe>();
 
-            var command = new NpgsqlCommand(query.ToString(), _connection);
+            command.CommandText = query.ToString();
+            command.Connection = _connection;
 
-            SetFilterParams(command, filter, paging, sort);
 
             _connection.Open();
 
@@ -292,45 +294,10 @@ namespace SuperSimpleCookbook.Repository
 
         #region Extensions
 
-        private void SetFilterParams
-            (NpgsqlCommand command, FilterForRecipe filter, Paging paging, SortOrder sort)
-        {
-            if (!string.IsNullOrWhiteSpace(filter.Title))
-            {
-                command.Parameters.AddWithValue("@Title", "%" + filter.Title + "%");
-            }
-            if (!string.IsNullOrWhiteSpace(filter.Subtitle))
-            {
-                command.Parameters.AddWithValue("@Subtitle", "%" + filter.Subtitle + "%");
-            }
-            if (filter.DateCreated is not null)
-            {
-                command.Parameters.AddWithValue("@DateCreated", filter.DateCreated.Value.Date);
-            }
-
-            //if(!string.IsNullOrWhiteSpace(filter.AuthorName))
-            //{
-            //    command.Parameters.AddWithValue("@Author", filter.AuthorName);
-            //}
+   
 
 
-            if (!string.IsNullOrWhiteSpace(sort.OrderBy))
-            {
-                command.Parameters.AddWithValue("@OrderBy", sort.OrderBy);
-            }
-            if (!string.IsNullOrWhiteSpace(sort.OrderDirection))
-            {
-                command.Parameters.AddWithValue("@OrderDirection", sort.OrderDirection);
-            }
-
-
-            command.Parameters.AddWithValue("@PageSize", paging.PageSize);
-            command.Parameters.AddWithValue("@PageNumber", paging.PageNumber);
-
-        }
-
-
-        private StringBuilder ReturnConditionString(FilterForRecipe filter, Paging paging, SortOrder sort)
+        private StringBuilder ReturnConditionString(NpgsqlCommand command, FilterForRecipe filter, Paging paging, SortOrder sort)
         {
             StringBuilder query = new StringBuilder("SELECT * FROM \"Recipe\" WHERE \"IsActive\" = true");
 
@@ -346,27 +313,35 @@ namespace SuperSimpleCookbook.Repository
 
             if (!string.IsNullOrWhiteSpace(filter.Title))
             {
+                command.Parameters.AddWithValue("@Title", "%" + filter.Title + "%");
                 query.Append(" AND \"Title\" LIKE @Title");
             }
 
             if (!string.IsNullOrWhiteSpace(filter.Subtitle))
             {
+                command.Parameters.AddWithValue("@Subtitle", "%" + filter.Subtitle + "%");
                 query.Append(" AND \"Subtitle\" LIKE @Subtitle");
             }
 
             if (filter.DateCreated is not null)
             {
+                command.Parameters.AddWithValue("@DateCreated", filter.DateCreated.Value.Date);
                 query.Append(" AND DATE(\"DateCreated\") = @DateCreated");
             }
 
             if (!string.IsNullOrEmpty(sort.OrderDirection) && !string.IsNullOrEmpty(sort.OrderBy))
             {
+                command.Parameters.AddWithValue("@OrderDirection", sort.OrderDirection);
+                command.Parameters.AddWithValue("@OrderBy", sort.OrderBy);
                 query.Append($" ORDER BY \"{sort.OrderBy}\"  {sort.OrderDirection} ");
 
             }
 
             if (int.IsPositive(paging.PageSize) && paging.PageNumber > 0)
             {
+                command.Parameters.AddWithValue("@PageSize", paging.PageSize);
+                command.Parameters.AddWithValue("@PageNumber", paging.PageNumber);
+
                 int page = (paging.PageNumber - 1) * paging.PageSize;
 
                 query.Append(" LIMIT @PageSize OFFSET " + page);
