@@ -141,20 +141,24 @@ namespace SuperSimpleCookbook.Controllers
 
         [HttpPut]
         [Route("UpdateAuthor/{uuid:Guid}")]
-        public async Task<IActionResult> Update([FromBody]Author author, Guid uuid)
+        public async Task<IActionResult> Update([FromBody]AuthorUpdateDTO authorDto, Guid uuid)
         {
             if (!ModelState.IsValid) 
             {
                 return BadRequest();
             }
+
+            var author = new Author();
+            author = _mapper.Map<AuthorUpdateDTO, Author>(authorDto);
+
             var response = await _service.UpdateAsync(author, uuid);
 
             if (response.Success == false)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
             }
-
-            return Ok(response.Data);
+            
+            return Ok();
 
         }
 

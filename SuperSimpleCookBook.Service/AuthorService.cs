@@ -120,6 +120,8 @@ namespace SuperSimpleCookbook.Service
 
         public async Task<ServiceResponse<Author>> UpdateAsync(Author entity, Guid uuid)
         {
+            entity.DateUpdated = DateTime.Now;
+
             var response = await _repository.PutAsync(entity, uuid);
 
             if (response.Success == false)
