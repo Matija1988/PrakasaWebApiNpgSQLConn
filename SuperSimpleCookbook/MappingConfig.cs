@@ -10,6 +10,7 @@ namespace SuperSimpleCookbook
             CreateMap<Author, AuthorReadDTO>().ReverseMap();
             CreateMap<Author, AuthorCreateDTO>().ReverseMap();
             CreateMap<Author, AuthorUpdateDTO>().ReverseMap();
+            CreateMap<Recipe, RecipeReadDTO>().ReverseMap();
 
         }
     }

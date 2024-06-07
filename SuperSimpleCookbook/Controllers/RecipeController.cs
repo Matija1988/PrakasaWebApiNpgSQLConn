@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using SuperSimpleCookbook.Common;
 using SuperSimpleCookbook.Model;
@@ -13,9 +14,12 @@ namespace SuperSimpleCookbook.Controllers
 
 
         private readonly IRecipeService<Recipe> _service;
-        public RecipeController(IRecipeService<Recipe> service)
+
+        private readonly IMapper _mapper;
+        public RecipeController(IRecipeService<Recipe> service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -28,7 +32,14 @@ namespace SuperSimpleCookbook.Controllers
                 return NotFound(response.Message);
             }
 
-            return Ok(response.Data);
+            List<RecipeReadDTO> recipeDTO = new List<RecipeReadDTO>();
+
+            foreach (var item in response.Data) 
+            {
+                recipeDTO.Add(_mapper.Map<Recipe, RecipeReadDTO>(item));
+            }
+
+            return Ok(recipeDTO);
 
         }
         [HttpGet]

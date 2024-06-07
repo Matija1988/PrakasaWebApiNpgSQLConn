@@ -1,13 +1,7 @@
-﻿using Npgsql;
-
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using SuperSimpleCookbook.Model;
 using SuperSimpleCookbook.Service.Common;
 using SuperSimpleCookbook.Model.Model;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
 using SuperSimpleCookbook.Common;
 using AutoMapper;
 
