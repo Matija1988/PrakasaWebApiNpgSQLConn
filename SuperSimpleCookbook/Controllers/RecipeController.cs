@@ -25,7 +25,7 @@ namespace SuperSimpleCookbook.Controllers
         #region GetMethods
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
             var response = await _service.GetAllAsync();
 
@@ -46,7 +46,7 @@ namespace SuperSimpleCookbook.Controllers
         }
         [HttpGet]
         [Route("{id:int}")]
-        public async Task<IActionResult> GetbyId(int id)
+        public async Task<IActionResult> GetbyIdAsync(int id)
         {
             var response = await _service.GetByIdAsync(id);
 
@@ -83,12 +83,37 @@ namespace SuperSimpleCookbook.Controllers
             return Ok(recipeDTOs);
         }
 
+
+        [HttpGet]
+        [Route("paginate")]
+        public async Task<IActionResult> GetAllWithPFSAsync(
+            [FromQuery] FilterForRecipe filter,
+            [FromQuery] Paging paging,
+            [FromQuery] SortOrder sort)
+        {
+            var response = await _service.GetRecipeWithPFSAsync(filter, paging, sort);
+
+            if (response.Success == false)
+            {
+                return BadRequest(response.Message);
+            }
+
+            List<RecipeReadDTO> recipeDTOs = new List<RecipeReadDTO>();
+
+            foreach (var item in response.Data)
+            {
+                recipeDTOs.Add(_mapper.Map<Recipe, RecipeReadDTO>(item));
+            }
+
+            return Ok(recipeDTOs);
+        }
+
         #endregion
 
         [HttpPost]
         [Route("CreateRecipe")]
 
-        public async Task<IActionResult> Post([FromBody] RecipeCreateDTO item)
+        public async Task<IActionResult> PostAsync([FromBody] RecipeCreateDTO item)
         {
             if (!ModelState.IsValid)
             {
@@ -110,12 +135,17 @@ namespace SuperSimpleCookbook.Controllers
 
         [HttpPut]
         [Route("UpdateRecipe/{id:int}")]
-        public async Task<IActionResult> Put([FromBody] Recipe newRecipe, int id)
+        public async Task<IActionResult> PutAsync([FromBody] RecipeUpdateDTO item, int id)
         {
             if(!ModelState.IsValid)
             {
                 return BadRequest();
             }
+
+
+            var newRecipe = _mapper.Map<RecipeUpdateDTO, Recipe>(item);
+
+            newRecipe.Id = id;
 
             var response = await _service.UpdateAsync(newRecipe, id);
 
@@ -130,7 +160,7 @@ namespace SuperSimpleCookbook.Controllers
 
         [HttpDelete]
         [Route("Delete/{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             var response = await _service.DeleteAsync(id);
 
@@ -142,29 +172,6 @@ namespace SuperSimpleCookbook.Controllers
             return NotFound();
         }
 
-        [HttpGet]
-        [Route("paginate")]
-        public async Task<IActionResult> AllWithPaginationFilteringAndSorting(
-            [FromQuery] FilterForRecipe filter,
-            [FromQuery] Paging paging,
-            [FromQuery] SortOrder sort)
-        {
-            var response = await _service.GetRecipeWithFilterPagingAndSortAsync(filter, paging, sort);
-
-            if (response.Success == false) 
-            { 
-                return BadRequest(response.Message);
-            }
-
-            List<RecipeReadDTO> recipeDTOs = new List<RecipeReadDTO>();
-
-            foreach (var item in response.Data) 
-            {
-                recipeDTOs.Add(_mapper.Map<Recipe, RecipeReadDTO>(item));
-            }
-
-            return Ok(recipeDTOs);
-        }
 
     }
 }

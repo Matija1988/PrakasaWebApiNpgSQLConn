@@ -13,6 +13,7 @@ namespace SuperSimpleCookbook
 
             CreateMap<Recipe, RecipeReadDTO>().ReverseMap();
             CreateMap<Recipe, RecipeCreateDTO>().ReverseMap();
+            CreateMap<Recipe, RecipeUpdateDTO>().ReverseMap();
         }
     }
 }

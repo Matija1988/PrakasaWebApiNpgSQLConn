@@ -18,7 +18,7 @@ namespace SuperSimpleCookbook.Service.Common
         Task<bool> DeleteAsync(int id);
 
         Task<ServiceResponse<List<T>>>
-            GetRecipeWithFilterPagingAndSortAsync(FilterForRecipe filter, Paging paging, SortOrder sort);
+            GetRecipeWithPFSAsync(FilterForRecipe filter, Paging paging, SortOrder sort);
 
     }
 }

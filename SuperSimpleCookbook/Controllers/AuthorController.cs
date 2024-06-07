@@ -23,14 +23,16 @@ namespace SuperSimpleCookbook.Controllers
 
         }
 
+        #region Get Methods
+
         [HttpGet]
         [Route("paginate")]
-        public async Task<IActionResult> GetAllWithPaginationFilteringAndSorting(
+        public async Task<IActionResult> GetAllWithPFSAsync(
             [FromQuery]FilterForAuthor filter, 
             [FromQuery]Paging paging, 
             [FromQuery]SortOrder sort)
         {
-            var response =  await _service.GetAuthorWithFilterPagingAndSortAsync(filter, paging, sort);
+            var response =  await _service.GetAuthorWithPFSAsync(filter, paging, sort);
 
             if(response.Success == false)
             {
@@ -49,7 +51,7 @@ namespace SuperSimpleCookbook.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
             var response = await _service.GetAllAsync();
 
@@ -70,7 +72,7 @@ namespace SuperSimpleCookbook.Controllers
 
         [HttpGet]
         [Route("NotActive")]
-        public async Task<IActionResult> GetAllNotActive()
+        public async Task<IActionResult> GetAllNotActiveAsync()
         {
             var response = await _service.GetNotActiveAsync();
 
@@ -85,14 +87,14 @@ namespace SuperSimpleCookbook.Controllers
             {
                 authorDTOs.Add(_mapper.Map<Author, AuthorReadDTO>(item));
             }
-
+            
             return Ok(authorDTOs);
         }
 
 
         [HttpGet]
         [Route("{uuid:guid}")]
-        public async Task<IActionResult> GetByGuid(Guid Uuid)
+        public async Task<IActionResult> GetByGuidAsync(Guid Uuid)
         {
             var response = await _service.GetByGuidAsync(Uuid);
 
@@ -107,10 +109,29 @@ namespace SuperSimpleCookbook.Controllers
 
         }
 
+        [HttpGet]
+        [Route("AuthorRecipe/{uuid:Guid}")]
+
+        public async Task<IActionResult> GetAuthorRecipeAsync(Guid uuid)
+        {
+            var response = await _service.GetRecepiesByAuthorGuidAsync(uuid);
+
+            if (response.Success == false)
+            {
+                return NotFound(response.Message);
+            }
+
+            return Ok(response.Data);
+
+        }
+
+
+        #endregion
+
         [HttpPost]
         [Route("CreateAuthor")]
 
-        public async Task<IActionResult> Create([FromBody] AuthorCreateDTO authorDTO)
+        public async Task<IActionResult> CreateAsync([FromBody] AuthorCreateDTO authorDTO)
         {
             if(!ModelState.IsValid)
             {
@@ -134,7 +155,7 @@ namespace SuperSimpleCookbook.Controllers
 
         [HttpPut]
         [Route("UpdateAuthor/{uuid:Guid}")]
-        public async Task<IActionResult> Update([FromBody]AuthorUpdateDTO authorDto, Guid uuid)
+        public async Task<IActionResult> UpdateAsync([FromBody]AuthorUpdateDTO authorDto, Guid uuid)
         {
             if (!ModelState.IsValid) 
             {
@@ -157,7 +178,7 @@ namespace SuperSimpleCookbook.Controllers
 
         [HttpDelete]
         [Route("DeleteAuthor/{uuid:Guid}")]
-        public async Task<IActionResult> Delete(Guid uuid)
+        public async Task<IActionResult> DeleteAsync(Guid uuid)
         {
            var response = await _service.DeleteAsync(uuid);
 
@@ -168,21 +189,6 @@ namespace SuperSimpleCookbook.Controllers
             return NotFound();
         }
 
-        [HttpGet]
-        [Route("AuthorRecipe/{uuid:Guid}")]
-
-        public async Task<IActionResult> GetAuthorRecipe(Guid uuid)
-        {
-            var response = await _service.GetRecepiesByAuthorGuidAsync(uuid);
-
-            if(response.Success == false)
-            {
-                return NotFound(response.Message);
-            }
-
-            return Ok(response.Data);
-
-        }
 
     }
 

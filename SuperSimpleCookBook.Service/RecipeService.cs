@@ -85,7 +85,7 @@ namespace SuperSimpleCookbook.Service
         }
 
         public async Task<ServiceResponse<List<Recipe>>>
-            GetRecipeWithFilterPagingAndSortAsync(FilterForRecipe filter, Paging paging, SortOrder sort)
+            GetRecipeWithPFSAsync(FilterForRecipe filter, Paging paging, SortOrder sort)
         {
             var response = await _repository.GetRecipeWithFilterPagingAndSortAsync(filter, paging, sort);
 
@@ -101,7 +101,10 @@ namespace SuperSimpleCookbook.Service
         #endregion
 
         public async Task<ServiceResponse<Recipe>> UpdateAsync(Recipe entity, int id)
-        {
+        {            
+           
+            entity.DateUpdated = DateTime.UtcNow;
+           
             var response = await _repository.PutAsync(entity, id);
 
             if (response.Success == false)
