@@ -49,7 +49,7 @@ namespace SuperSimpleCookbook.Repository
         {
             var response = new ServiceResponse<Author>();
 
-            string commandText = "SELECT \"FirstName\", \"LastName\"  FROM \"Author\" WHERE \"Uuid\" = @uuid;";
+            string commandText = "SELECT * FROM \"Author\" WHERE \"Uuid\" = @uuid;";
 
             var command = new NpgsqlCommand(commandText, _connection);
 
@@ -63,9 +63,16 @@ namespace SuperSimpleCookbook.Repository
                 {
                     response.Data = new Author
                     {
+                        Id = reader.GetInt32(0),
+                        Uuid = reader.GetGuid(1),
+                        FirstName = reader.GetString(2),
+                        LastName = reader.GetString(3),
+                        DateOfBirth = reader.GetDateTime(4),
+                        Bio = reader.GetString(5),
+                        IsActive = reader.GetBoolean(6),
+                        DateCreated = reader.GetDateTime(7),
+                        DateUpdated = reader.GetDateTime(8)
 
-                        FirstName = reader.GetString(0),
-                        LastName = reader.GetString(1),
 
                     };
 
@@ -73,7 +80,7 @@ namespace SuperSimpleCookbook.Repository
                     await _connection.DisposeAsync();
 
                     response.Success = true;
-
+                    
                     return response;
 
                 }

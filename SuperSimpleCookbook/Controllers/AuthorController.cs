@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿        using Microsoft.AspNetCore.Mvc;
 using SuperSimpleCookbook.Model;
 using SuperSimpleCookbook.Service.Common;
 using SuperSimpleCookbook.Model.Model;
@@ -93,10 +93,10 @@ namespace SuperSimpleCookbook.Controllers
 
 
         [HttpGet]
-        [Route("{uuid:guid}")]
-        public async Task<IActionResult> GetByGuidAsync(Guid Uuid)
+        [Route("{uuid:Guid}")]
+        public async Task<IActionResult> GetByGuidAsync(Guid uuid)
         {
-            var response = await _service.GetByGuidAsync(Uuid);
+            var response = await _service.GetByGuidAsync(uuid);
 
             if (response.Success == false)
             {

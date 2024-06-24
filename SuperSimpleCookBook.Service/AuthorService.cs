@@ -33,8 +33,7 @@ namespace SuperSimpleCookbook.Service
             entity.DateUpdated = DateTime.Now;
             entity.Uuid = Guid.NewGuid();
 
-            Debug.WriteLine(entity.Uuid);
-
+        
             var response = await _repository.PostAsync(entity);
 
             if (response.Success == false)
@@ -68,6 +67,8 @@ namespace SuperSimpleCookbook.Service
         public async Task<ServiceResponse<Author>> GetByGuidAsync(Guid uuid)
         {
             var response = await _repository.GetAsync(uuid);
+
+            Debug.WriteLine(response.Data);
 
             if (response.Success == false)
             {

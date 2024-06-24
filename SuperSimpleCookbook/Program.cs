@@ -24,14 +24,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder =>
+        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddScoped((provider) => new NpgsqlConnection(connectionString));
 
-//builder.Services.AddScoped<IAuthorService<Author, AuthorRecipe>, AuthorService>();
-//builder.Services.AddScoped<IRepositoryAuthor<Author, AuthorRecipe>, AuthorRepository>();
 
-//builder.Services.AddScoped<IRecipeService<Recipe>, RecipeService>(); 
-//builder.Services.AddScoped<IRepositoryRecipe<Recipe>, RecipeRepository>();
 
 var app = builder.Build();
 
@@ -47,5 +51,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors("CorsPolicy");
 
 app.Run();
