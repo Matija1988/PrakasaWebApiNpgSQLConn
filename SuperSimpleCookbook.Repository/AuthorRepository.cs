@@ -314,19 +314,25 @@ namespace SuperSimpleCookbook.Repository
 
             var countCommand = new NpgsqlBatchCommand();
 
-            StringBuilder query = ReturnConditionString(filter, paging, sort);
+            StringBuilder query = ReturnConditionString(selectCommand, filter, paging, sort);
+
+            StringBuilder countQuery = ReturnCountQueryBuilder(countCommand, filter);
 
             //StringBuilder totalCountQuery = ReturnCountString(); 
 
             var listFromDB = new List<Author>();
 
-            var command = new NpgsqlCommand(query.ToString(), _connection);
+            selectCommand.CommandText = query.ToString();
 
-            SetFilterParams(command, filter, paging, sort);
+            countCommand.CommandText = countQuery.ToString();
 
+            batch.BatchCommands.Add(selectCommand);
+            batch.BatchCommands.Add(countCommand);
+
+            
             _connection.Open();
 
-            var reader = await command.ExecuteReaderAsync();
+            var reader = await batch.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
@@ -342,8 +348,22 @@ namespace SuperSimpleCookbook.Repository
                     IsActive = reader.GetBoolean(6),
                     DateCreated = reader.GetDateTime(7),
                     DateUpdated = reader.GetDateTime(8),
+                    Role = new Role
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                        Name = reader.GetString(reader.GetOrdinal("Name"))
+                    },
+                    Username = reader.GetString(reader.GetOrdinal("Username")),
+                    Password = reader.GetString(reader.GetOrdinal("Password"))
 
                 });
+                
+            }
+            await reader.NextResultAsync();
+
+            if (await reader.ReadAsync())
+            {
+                response.TotalCount = reader.GetInt32(0);
             }
 
             _connection.Close();
@@ -365,38 +385,90 @@ namespace SuperSimpleCookbook.Repository
             }
         }
 
+
+
         #region Extensions
 
-        private StringBuilder ReturnConditionString(FilterForAuthor filter, Paging paging, SortOrder sort)
+        private StringBuilder ReturnCountQueryBuilder
+            (NpgsqlBatchCommand countCommand, FilterForAuthor filter)
         {
-            StringBuilder query = new StringBuilder("SELECT * FROM \"Author\" WHERE \"IsActive\" = true");
+            StringBuilder query = new StringBuilder
+                ("SELECT COUNT(*) FROM \"Author\" WHERE \"IsActive\" = true ");
+
+            if(!string.IsNullOrEmpty(filter.FirstName))
+            {
+                countCommand.Parameters.AddWithValue("@FirstName", "%" + filter.FirstName + "%");
+                query.Append(" AND \"FirstName\" LIKE @FirstName ");
+            }
+            if (!string.IsNullOrEmpty(filter.FirstName))
+            {
+                countCommand.Parameters.AddWithValue("@LastName", "%" + filter.LastName + "%");
+                query.Append(" AND \"LastName\" LIKE @LastName ");
+            }
+            if (filter.DateOfBirth != null) 
+            { 
+                countCommand.Parameters.AddWithValue("@DateOfBirth", 
+                    NpgsqlTypes.NpgsqlDbType.Date, filter.DateOfBirth);
+                query.Append(" AND \"DateOfBirth\" = @DateOfBirth ");
+            }
+            if (filter.DateCreated != null) 
+            {
+                countCommand.Parameters.AddWithValue("@DateCreated",
+                    NpgsqlTypes.NpgsqlDbType.Date, filter.DateCreated);
+                query.Append(" AND \"DateCreated\" = @DateCreated ");
+            }
+           
+            return query;
+        }
+
+        private StringBuilder ReturnConditionString(NpgsqlBatchCommand command, 
+            FilterForAuthor filter, 
+            Paging paging, 
+            SortOrder sort)
+        {
+            StringBuilder query = new StringBuilder(
+                "SELECT a.*, b.* " +
+                "FROM " +
+                "\"Author\" a " +
+                "INNER JOIN \"Role\" b ON a.\"RoleId\" = b.\"Id\" " +
+                "WHERE \"IsActive\" = true");
 
 
 
             if (!string.IsNullOrWhiteSpace(filter.FirstName))
             {
                 query.Append(" AND \"FirstName\" LIKE @FirstName");
+                command.Parameters.AddWithValue("@FirstName", "%" + filter.FirstName + "%");
             }
 
             if (!string.IsNullOrWhiteSpace(filter.LastName))
             {
                 query.Append(" AND \"LastName\" LIKE @LastName");
+                command.Parameters.AddWithValue("@LastName", "%" + filter.LastName + "%");
             }
 
             if (filter.DateOfBirth is not null)
             {
                 query.Append(" AND DATE(\"DateOfBirth\") = @DateOfBirth");
+                command.Parameters.AddWithValue("@DateOfBirth", filter.DateOfBirth.Value.Date);
             }
 
             if (filter.DateCreated is not null)
             {
                 query.Append(" AND DATE(\"DateCreated\") = @DateCreated");
+                command.Parameters.AddWithValue("@DateCreated", filter.DateCreated.Value.Date);
             }
+
 
             if (!string.IsNullOrEmpty(sort.OrderDirection) && !string.IsNullOrEmpty(sort.OrderBy))
             {
                 query.Append($" ORDER BY \"{sort.OrderBy}\"  {sort.OrderDirection} ");
+                command.Parameters.AddWithValue("@OrderBy", sort.OrderBy);
+            }
 
+            if (!string.IsNullOrWhiteSpace(sort.OrderDirection))
+            {
+                command.Parameters.AddWithValue("@OrderDirection", sort.OrderDirection);
             }
 
             if (int.IsPositive(paging.PageSize) && paging.PageNumber > 0)
@@ -407,41 +479,45 @@ namespace SuperSimpleCookbook.Repository
 
             }
 
-            return query;
-        }
-
-        private void SetFilterParams
-            (NpgsqlCommand command, FilterForAuthor filter, Paging paging, SortOrder sort)
-        {
-            if (!string.IsNullOrWhiteSpace(filter.FirstName))
-            {
-                command.Parameters.AddWithValue("@FirstName", "%" + filter.FirstName + "%");
-            }
-            if (!string.IsNullOrWhiteSpace(filter.LastName))
-            {
-                command.Parameters.AddWithValue("@LastName", "%" + filter.LastName + "%");
-            }
-            if (filter.DateOfBirth is not null)
-            {
-                command.Parameters.AddWithValue("@DateOfBirth", filter.DateOfBirth.Value.Date);
-            }
-            if (filter.DateCreated is not null)
-            {
-                command.Parameters.AddWithValue("@DateCreated", filter.DateCreated.Value.Date);
-            }
-            if (!string.IsNullOrWhiteSpace(sort.OrderBy))
-            {
-                command.Parameters.AddWithValue("@OrderBy", sort.OrderBy);
-            }
-            if (!string.IsNullOrWhiteSpace(sort.OrderDirection))
-            {
-                command.Parameters.AddWithValue("@OrderDirection", sort.OrderDirection);
-            }
-
             command.Parameters.AddWithValue("@PageSize", paging.PageSize);
             command.Parameters.AddWithValue("@PageNumber", paging.PageNumber);
 
+
+            return query;
         }
+
+        //private void SetFilterParams
+        //    (NpgsqlCommand command, FilterForAuthor filter, Paging paging, SortOrder sort)
+        //{
+        //    if (!string.IsNullOrWhiteSpace(filter.FirstName))
+        //    {
+        //        command.Parameters.AddWithValue("@FirstName", "%" + filter.FirstName + "%");
+        //    }
+        //    if (!string.IsNullOrWhiteSpace(filter.LastName))
+        //  s  {
+        //        command.Parameters.AddWithValue("@LastName", "%" + filter.LastName + "%");
+        //    }
+        //    if (filter.DateOfBirth is not null)
+        //    {
+        //        command.Parameters.AddWithValue("@DateOfBirth", filter.DateOfBirth.Value.Date);
+        //    }
+        //    if (filter.DateCreated is not null)
+        //    {
+        //        command.Parameters.AddWithValue("@DateCreated", filter.DateCreated.Value.Date);
+        //    }
+        //    if (!string.IsNullOrWhiteSpace(sort.OrderBy))
+        //    {
+        //        command.Parameters.AddWithValue("@OrderBy", sort.OrderBy);
+        //    }
+        //    if (!string.IsNullOrWhiteSpace(sort.OrderDirection))
+        //    {
+        //        command.Parameters.AddWithValue("@OrderDirection", sort.OrderDirection);
+        //    }
+
+        //    command.Parameters.AddWithValue("@PageSize", paging.PageSize);
+        //    command.Parameters.AddWithValue("@PageNumber", paging.PageNumber);
+
+        //}
         private void AddParameters(NpgsqlCommand command, Author author)
         {
             command.Parameters.AddWithValue("@FirstName", author.FirstName);

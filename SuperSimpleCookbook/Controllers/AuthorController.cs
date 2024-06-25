@@ -46,7 +46,7 @@ namespace SuperSimpleCookbook.Controllers
                 authorDTOs.Add(_mapper.Map<Author, AuthorReadDTO>(item));
             }
 
-            return Ok(authorDTOs);
+            return Ok(response);
 
         }
 

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SuperSimpleCookbook.Model.Model;
+using System.ComponentModel.DataAnnotations;
 
 namespace SuperSimpleCookbook.Model
 {
@@ -22,6 +23,15 @@ namespace SuperSimpleCookbook.Model
         public string Bio { get; set; }
        
         public bool IsActive { get; set; }
+
+        [Required, StringLength(30, ErrorMessage = "Maximum allowed number of characters = 30")]
+        public string Username { get; set; }
+
+
+        [Required, StringLength(255, ErrorMessage = "Maximum allowed number of characters = 255")]
+        public string Password { get; set; }
+
+        public Role Role { get; set; }
 
         public DateTime DateCreated { get; set; }
 
