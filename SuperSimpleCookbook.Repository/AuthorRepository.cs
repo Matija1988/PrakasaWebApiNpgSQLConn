@@ -86,6 +86,9 @@ namespace SuperSimpleCookbook.Repository
                 }
                 else
                 {
+                        
+                }
+                {
                     response.Success = false;
                     response.Message = "No author found in DB";
                     return response;
@@ -305,7 +308,15 @@ namespace SuperSimpleCookbook.Repository
         {
             var response = new ServiceResponse<List<Author>>();
 
+            var batch = new NpgsqlBatch(_connection);
+
+            var selectCommand = new NpgsqlBatchCommand();
+
+            var countCommand = new NpgsqlBatchCommand();
+
             StringBuilder query = ReturnConditionString(filter, paging, sort);
+
+            //StringBuilder totalCountQuery = ReturnCountString(); 
 
             var listFromDB = new List<Author>();
 

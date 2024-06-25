@@ -11,5 +11,7 @@ namespace SuperSimpleCookbook.Model.Model
         public T Data { get; set; }
         public bool Success { get; set; }   
         public string? Message { get; set; }
+
+        public int TotalCount { get; set; }
     }
 }
