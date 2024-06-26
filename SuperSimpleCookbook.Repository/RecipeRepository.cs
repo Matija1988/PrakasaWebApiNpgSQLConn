@@ -56,7 +56,7 @@ namespace SuperSimpleCookbook.Repository
             {
                 if (await reader.ReadAsync())
                 {
-                    response.Data = new Recipe
+                    response.Items = new Recipe
                     {
 
                         Title = reader.GetString(0),
@@ -120,7 +120,7 @@ namespace SuperSimpleCookbook.Repository
             await reader.DisposeAsync();
 
             response.Success = true;
-            response.Data = listFromDB;
+            response.Items = listFromDB;
 
             return response;
         }
@@ -164,7 +164,7 @@ namespace SuperSimpleCookbook.Repository
             _connection.Close();
             await reader.DisposeAsync();
 
-            response.Data = listFromDB;
+            response.Items = listFromDB;
             response.Success = true;
 
             return response;
@@ -191,7 +191,7 @@ namespace SuperSimpleCookbook.Repository
                 await _connection.DisposeAsync();
 
                 response.Success = true;
-                response.Data = item;
+                response.Items = item;
 
                 return response;
             }
@@ -225,7 +225,7 @@ namespace SuperSimpleCookbook.Repository
                 await _connection.DisposeAsync();
                 
                 response.Success = true;
-                response.Data = item;
+                response.Items = item;
                 return response;
                 
             }
@@ -276,7 +276,7 @@ namespace SuperSimpleCookbook.Repository
             if (listFromDB is not null)
             {
 
-                response.Data = listFromDB;
+                response.Items = listFromDB;
                 response.Success = true;
 
                 return response;

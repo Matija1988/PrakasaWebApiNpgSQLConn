@@ -1,4 +1,5 @@
-﻿using SuperSimpleCookbook.Common;
+﻿using BCrypt.Net;
+using SuperSimpleCookbook.Common;
 using SuperSimpleCookbook.Model;
 using SuperSimpleCookbook.Model.Model;
 using SuperSimpleCookbook.Repository.Common.Interfaces;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,13 +30,27 @@ namespace SuperSimpleCookbook.Service
 
         public async Task<ServiceResponse<Author>> CreateAsync(Author entity)
         {
+            var response = new ServiceResponse<Author>();
             entity.IsActive = true;
             entity.DateCreated = DateTime.Now;
             entity.DateUpdated = DateTime.Now;
             entity.Uuid = Guid.NewGuid();
 
-        
-            var response = await _repository.PostAsync(entity);
+
+           
+            if (await ValidateUsername(entity) == false)
+            {
+                response.Success = false;
+                response.Message = "Username in use!";
+                return response;
+            }
+
+            string password = BCrypt.Net.BCrypt.HashPassword(entity.Password);
+
+            entity.Password = password;
+
+            response = await _repository.PostAsync(entity);
+
 
             if (response.Success == false)
             {
@@ -68,7 +84,7 @@ namespace SuperSimpleCookbook.Service
         {
             var response = await _repository.GetAsync(uuid);
 
-            Debug.WriteLine(response.Data);
+            Debug.WriteLine(response.Items);
 
             if (response.Success == false)
             {
@@ -113,6 +129,10 @@ namespace SuperSimpleCookbook.Service
                 return response;
             }
 
+            response.PageCount = (int)Math.Ceiling(response.TotalCount / (double)paging.PageSize);
+                
+            
+            
             return response;
 
         }
@@ -122,6 +142,7 @@ namespace SuperSimpleCookbook.Service
         public async Task<ServiceResponse<Author>> UpdateAsync(Author entity, Guid uuid)
         {
             entity.DateUpdated = DateTime.Now;
+            entity.IsActive = true;
 
             var response = await _repository.PutAsync(entity, uuid);
 
@@ -131,6 +152,21 @@ namespace SuperSimpleCookbook.Service
             }
             return response;
 
+        }
+
+        private async Task<bool> ValidateUsername(Author entity)
+        {
+            var userNameValidation = await _repository.GetAllAsync();
+
+            foreach (var userName in userNameValidation.Items)
+            {
+                if (userName.Username == entity.Username)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
 

@@ -36,7 +36,7 @@ namespace SuperSimpleCookbook.Controllers
 
             List<RecipeReadDTO> recipeDTOs = new List<RecipeReadDTO>();
 
-            foreach (var item in response.Data) 
+            foreach (var item in response.Items) 
             {
                 recipeDTOs.Add(_mapper.Map<Recipe, RecipeReadDTO>(item));
             }
@@ -56,7 +56,7 @@ namespace SuperSimpleCookbook.Controllers
             }
 
             var recipeDTO = new RecipeReadDTO();
-            recipeDTO = _mapper.Map<Recipe, RecipeReadDTO>(response.Data);
+            recipeDTO = _mapper.Map<Recipe, RecipeReadDTO>(response.Items);
 
             return Ok(recipeDTO);
 
@@ -75,7 +75,7 @@ namespace SuperSimpleCookbook.Controllers
 
             List<RecipeReadDTO> recipeDTOs = new List<RecipeReadDTO>();
 
-            foreach (var item in response.Data)
+            foreach (var item in response.Items)
             {
                 recipeDTOs.Add(_mapper.Map<Recipe, RecipeReadDTO>(item));
             }
@@ -100,7 +100,7 @@ namespace SuperSimpleCookbook.Controllers
 
             List<RecipeReadDTO> recipeDTOs = new List<RecipeReadDTO>();
 
-            foreach (var item in response.Data)
+            foreach (var item in response.Items)
             {
                 recipeDTOs.Add(_mapper.Map<Recipe, RecipeReadDTO>(item));
             }
@@ -129,7 +129,7 @@ namespace SuperSimpleCookbook.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
             }
 
-            return StatusCode(StatusCodes.Status201Created, response.Data);
+            return StatusCode(StatusCodes.Status201Created, response.Items);
 
         }
 
@@ -154,7 +154,7 @@ namespace SuperSimpleCookbook.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
             }
 
-            return Ok(response.Data);
+            return Ok(response.Items);
 
         }
 

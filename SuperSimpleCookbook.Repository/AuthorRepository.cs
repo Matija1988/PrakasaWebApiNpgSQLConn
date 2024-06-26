@@ -49,7 +49,11 @@ namespace SuperSimpleCookbook.Repository
         {
             var response = new ServiceResponse<Author>();
 
-            string commandText = "SELECT * FROM \"Author\" WHERE \"Uuid\" = @uuid;";
+            string commandText = "SELECT a.*, b.* " +
+                "FROM " +
+                "\"Author\" a " +
+                "INNER JOIN \"Role\" b ON a.\"RoleId\" = b.\"Id\" " +
+                "WHERE \"Uuid\" = @Uuid";
 
             var command = new NpgsqlCommand(commandText, _connection);
 
@@ -61,7 +65,7 @@ namespace SuperSimpleCookbook.Repository
             {
                 if (await reader.ReadAsync())
                 {
-                    response.Data = new Author
+                    response.Items = new Author
                     {
                         Id = reader.GetInt32(0),
                         Uuid = reader.GetGuid(1),
@@ -71,7 +75,14 @@ namespace SuperSimpleCookbook.Repository
                         Bio = reader.GetString(5),
                         IsActive = reader.GetBoolean(6),
                         DateCreated = reader.GetDateTime(7),
-                        DateUpdated = reader.GetDateTime(8)
+                        DateUpdated = reader.GetDateTime(8),
+                        Role = new Role
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name"))
+                        },
+                        Username = reader.GetString(reader.GetOrdinal("Username")),
+                        Password = reader.GetString(reader.GetOrdinal("Password"))
 
 
                     };
@@ -101,7 +112,11 @@ namespace SuperSimpleCookbook.Repository
             var response = new ServiceResponse<List<Author>>();
             try
             {
-                string commandText = "SELECT * FROM \"Author\" where \"IsActive\" = true;";
+                string commandText = "SELECT a.*, b.* " +
+                "FROM " +
+                "\"Author\" a " +
+                "INNER JOIN \"Role\" b ON a.\"RoleId\" = b.\"Id\" " +
+                "WHERE \"IsActive\" = true";
                 var listFromDB = new List<Author>();
                 var command = new NpgsqlCommand(commandText, _connection);
 
@@ -123,6 +138,13 @@ namespace SuperSimpleCookbook.Repository
                         IsActive = reader.GetBoolean(6),
                         DateCreated = reader.GetDateTime(7),
                         DateUpdated = reader.GetDateTime(8),
+                        Role = new Role
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name"))
+                        },
+                        Username = reader.GetString(reader.GetOrdinal("Username")),
+                        Password = reader.GetString(reader.GetOrdinal("Password"))
 
                     });
                 }
@@ -130,7 +152,7 @@ namespace SuperSimpleCookbook.Repository
                 _connection.Close();
                 await reader.DisposeAsync();
 
-                response.Data = listFromDB;
+                response.Items = listFromDB;
                 response.Success = true;
 
                 return response;
@@ -185,7 +207,7 @@ namespace SuperSimpleCookbook.Repository
             _connection.Close();
             await reader.DisposeAsync();
 
-            response.Data = listFromDB;
+            response.Items = listFromDB;
             response.Success = true;
 
             return response;
@@ -229,7 +251,7 @@ namespace SuperSimpleCookbook.Repository
             _connection.Close();
             await reader.DisposeAsync();
 
-            response.Data = listFromDB;
+            response.Items = listFromDB;
             response.Success = true;
 
             return response;
@@ -241,8 +263,32 @@ namespace SuperSimpleCookbook.Repository
 
             try
             {
-                string commandText = "INSERT INTO \"Author\" (\"Uuid\", \"FirstName\", \"LastName\",\"DateOfBirth\", \"Bio\", \"IsActive\", \"DateCreated\", \"DateUpdated\") "
-                    + " VALUES (@Uuid, @FirstName, @LastName, @DateOfBirth, @Bio, @IsActive, @DateCreated, @DateUpdated) RETURNING \"Id\"";
+                string commandText = 
+                    "INSERT INTO \"Author\" " +
+                    "(\"Uuid\", " +
+                    "\"FirstName\", " +
+                    "\"LastName\", " +
+                    "\"DateOfBirth\", " +
+                    "\"Bio\", " +
+                    "\"IsActive\", " +
+                    "\"DateCreated\", " +
+                    "\"DateUpdated\", " +
+                    "\"RoleId\", " +
+                    "\"Username\", " +
+                    "\"Password\")" +
+                    " VALUES " +
+                    "(@Uuid, " +
+                    "@FirstName, " +
+                    "@LastName, " +
+                    "@DateOfBirth, " +
+                    "@Bio, " +
+                    "@IsActive, " +
+                    "@DateCreated, " +
+                    "@DateUpdated," +
+                    "@RoleId, " +
+                    "@Username, " +
+                    "@Password) " +
+                    "RETURNING \"Id\"";
 
 
                 using var cmd = _connection.CreateCommand();
@@ -258,7 +304,7 @@ namespace SuperSimpleCookbook.Repository
                 _connection.Close();
                 await _connection.DisposeAsync();
 
-                response.Data = item;
+                response.Items = item;
                 response.Success = true;
                 return response;
             }
@@ -275,9 +321,20 @@ namespace SuperSimpleCookbook.Repository
             var response = new ServiceResponse<Author>();
             try
             {
-                const string commandText = "UPDATE \"Author\" SET  \"Uuid\" =@Uuid, \"FirstName\" = @FirstName, " +
-                    "\"LastName\" = @LastName, \"DateOfBirth\" = @DateOfBirth, \"Bio\" = @Bio, \"IsActive\" = @IsActive, " +
-           "\"DateUpdated\" = @DateUpdated WHERE \"Uuid\" = @Uuid;";
+                const string commandText = 
+                    "UPDATE " +
+                    "\"Author\" SET  " +
+                    "\"Uuid\" = @Uuid, " +
+                    "\"FirstName\" = @FirstName, " +
+                    "\"LastName\" = @LastName, " +
+                    "\"DateOfBirth\" = @DateOfBirth, " +
+                    "\"Bio\" = @Bio, " +
+                    "\"IsActive\"  = @IsActive, " +
+                    "\"DateUpdated\" = @DateUpdated, " +
+                    "\"RoleId\" = @RoleId, " +
+                    "\"Username\" = @Username, "  +
+                    "\"Password\" = @Password " + 
+                    "WHERE \"Uuid\" = @Uuid;";
 
                 using var cmd = _connection.CreateCommand();
                 cmd.CommandText = commandText;
@@ -291,7 +348,7 @@ namespace SuperSimpleCookbook.Repository
                 await _connection.DisposeAsync();
 
                 response.Success = true;
-                response.Data = item;
+                response.Items = item;
 
                 return response;
             }
@@ -372,7 +429,7 @@ namespace SuperSimpleCookbook.Repository
             if (listFromDB is not null)
             {
 
-                response.Data = listFromDB;
+                response.Items = listFromDB;
                 response.Success = true;
 
                 return response;
@@ -526,6 +583,9 @@ namespace SuperSimpleCookbook.Repository
             command.Parameters.AddWithValue("@Bio", author.Bio);
             command.Parameters.AddWithValue("@IsActive", author.IsActive);
             command.Parameters.AddWithValue("@DateUpdated", author.DateUpdated);
+            command.Parameters.AddWithValue("@Username", author.Username);
+            command.Parameters.AddWithValue("@Password", author.Password);
+            command.Parameters.AddWithValue("@RoleId", author.Role.Id);
 
         }
 

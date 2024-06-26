@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SuperSimpleCookbook.Model\SuperSimpleCookbook.Model.csproj" />
     <ProjectReference Include="..\SuperSimpleCookbook.Repository.Common\SuperSimpleCookbook.Repository.Common.csproj" />
     <ProjectReference Include="..\SuperSimpleCookbook.Service.Common\SuperSimpleCookbook.Service.Common.csproj" />

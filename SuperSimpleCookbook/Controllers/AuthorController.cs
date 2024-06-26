@@ -41,12 +41,20 @@ namespace SuperSimpleCookbook.Controllers
 
             List<AuthorReadDTO> authorDTOs = new List<AuthorReadDTO>();
 
-            foreach (var item in response.Data)
+            foreach (var item in response.Items)
             {
                 authorDTOs.Add(_mapper.Map<Author, AuthorReadDTO>(item));
             }
 
-            return Ok(response);
+            var finalResponse = new ServiceResponse<List<AuthorReadDTO>>(); 
+            
+            finalResponse.Items = authorDTOs;
+            finalResponse.TotalCount = response.TotalCount;
+            finalResponse.PageCount = response.PageCount;
+            finalResponse.Message = response.Message;
+            finalResponse.Success = response.Success;
+
+            return Ok(finalResponse);
 
         }
 
@@ -62,7 +70,7 @@ namespace SuperSimpleCookbook.Controllers
 
             List<AuthorReadDTO> authorDTOs = new List<AuthorReadDTO>();
 
-            foreach (var item in response.Data) 
+            foreach (var item in response.Items) 
             {
                 authorDTOs.Add(_mapper.Map<Author, AuthorReadDTO>(item));
             }
@@ -83,7 +91,7 @@ namespace SuperSimpleCookbook.Controllers
 
             List<AuthorReadDTO> authorDTOs = new List<AuthorReadDTO>();
 
-            foreach (var item in response.Data)
+            foreach (var item in response.Items)
             {
                 authorDTOs.Add(_mapper.Map<Author, AuthorReadDTO>(item));
             }
@@ -103,7 +111,7 @@ namespace SuperSimpleCookbook.Controllers
                 return NotFound(response.Message);
             }
 
-            var authorDTO = _mapper.Map<Author, AuthorReadDTO>(response.Data);
+            var authorDTO = _mapper.Map<Author, AuthorReadDTO>(response.Items);
 
             return Ok(authorDTO);    
 
@@ -121,7 +129,7 @@ namespace SuperSimpleCookbook.Controllers
                 return NotFound(response.Message);
             }
 
-            return Ok(response.Data);
+            return Ok(response.Items);
 
         }
 

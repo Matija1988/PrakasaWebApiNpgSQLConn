@@ -17,5 +17,13 @@ namespace SuperSimpleCookbook.Model
 
         public bool IsActive { get; set; }
 
+        [Required, StringLength(30, ErrorMessage = "Maximum allowed number of characters = 30")]
+        public string Username { get; set; }
+
+        [Required, StringLength(30, ErrorMessage = "Maximum allowed number of characters = 30")]
+        public string Password { get; set; }
+
+        public int RoleId { get; set; }
+
     }
 }
